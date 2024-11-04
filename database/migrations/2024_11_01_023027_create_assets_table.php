@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('brand');
             $table->string('calibration');
             $table->string('photo');
-            $table->foreignId('branch_id')->constrained();
+            $table->foreignId('branch_id')->constrained('branch_offices');
             $table->timestamps();
         });
     }
