@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('inventory_number');
             $table->string('name');
             $table->string('serial_number');
-            $table->string('brand');
+            $table->string('brand_id');
             $table->string('calibration');
             $table->string('photo');
             $table->foreignId('branch_id')->constrained('branch_offices');

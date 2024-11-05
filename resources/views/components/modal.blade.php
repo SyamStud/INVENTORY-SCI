@@ -27,10 +27,10 @@
     prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) - 1 },
 }" x-init="$watch('show', value => {
     if (value) {
-        document.body.classList.add('overflow-y-hidden');
+        // document.body.classList.add('overflow-y-hidden');
         {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
     } else {
-        document.body.classList.remove('overflow-y-hidden');
+        // document.body.classList.remove('overflow-y-hidden');
     }
 })"
     x-on:open-modal.window="$event.detail == '{{ $name }}' ? show = true : null"

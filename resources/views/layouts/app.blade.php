@@ -19,8 +19,96 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <!-- SweetAlert2 CSS and JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Select2 CSS and JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Custom Styles for Select2 -->
+    <style>
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            color: black;
+            text-decoration: none;
+        }
+
+        .dropdown a:hover {
+            background-color: #74B2E9;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .foto {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .foto {
+                width: 35px;
+                height: 35px;
+            }
+
+            .dropdown {
+                top: 45px;
+            }
+        }
+    </style>
+
+    <style>
+        .select2.select2-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .selection {
+            display: flex;
+            width: 100%;
+        }
+
+        .select2-selection.select2-selection--single {
+            height: 40px;
+            border: 1px solid #d1d3e2;
+            --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+            margin-top: 8px;
+            width: 100%;
+            padding-top: 5px;
+        }
+
+        .select2-select2-container {
+            height: 40px;
+            padding-top: 5px;
+        }
+
+        .select2-selection__arrow {
+            margin-top: 12px;
+        }
+
+        .select2-container span {
+            border: none;
+        }
+    </style>
 
 
     <!-- jQuery -->
@@ -174,6 +262,8 @@
                 </div>
             </header>
         @endisset
+
+        <x-alert position="top-end"></x-alert>
 
         <!-- Page Content -->
         <main>

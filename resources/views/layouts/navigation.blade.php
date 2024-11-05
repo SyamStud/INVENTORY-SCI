@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <x-application-logo class="ms-4 block w-16" />
                     </a>
                 </div>
 
@@ -17,10 +17,10 @@
                     </x-nav-link>
 
                     <x-dropdown-wrapper name="Aset">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('assets.index')">
                             Daftar Aset
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('brands.index')">
                             Daftar Merek
                         </x-dropdown-link>
                     </x-dropdown-wrapper>
@@ -35,10 +35,10 @@
                     </x-dropdown-wrapper>
 
                     <x-dropdown-wrapper name="Pegawai">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('employees.index')">
                             Daftar Pegawai
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('positions.index')">
                             Daftar Posisi
                         </x-dropdown-link>
                     </x-dropdown-wrapper>

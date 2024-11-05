@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -31,12 +32,24 @@ class UnitController extends Controller
             return back()->withInput()->withErrors($validation);
         }
 
+        $isExist = Unit::where('name', $request->name)->where('branch_id', Auth::user()->branch_id)->exists();
+
+        if ($isExist) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Satuan sudah terdaftar',
+            ]);
+        }
+
         Unit::create([
             'name' => $request->name,
             'branch_id' => 1,
         ]);
 
-        return back()->with('success', 'Unit created successfully');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Satuan berhasil ditambahkan',
+        ]);
     }
 
     /**
@@ -56,7 +69,10 @@ class UnitController extends Controller
             'name' => $request->name,
         ]);
 
-        return back()->with('success', 'Unit updated successfully');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Satuan berhasil diubah',
+        ]);
     }
 
     /**
@@ -66,13 +82,16 @@ class UnitController extends Controller
     {
         $unit->delete();
 
-        return back()->with('success', 'Unit deleted successfully');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Satuan berhasil dihapus',
+        ]);
     }
 
     // Controller Method
     public function getUnits()
     {
-        $units = Unit::orderByDesc('created_at');
+        $units = Unit::where('branch_id', Auth::user()->branch_id)->orderByDesc('created_at');
 
         return DataTables::of($units)
             ->addIndexColumn()
@@ -88,7 +107,7 @@ class UnitController extends Controller
                             \$dispatch('set-unit', {$unitJson})
                         \">
                         <img class='w-4' src='https://img.icons8.com/?size=100&id=NiI6TTAAFkQH&format=png&color=FFFFFF' alt=''>
-                        Edit
+                        Ubah
                     </button>
 
                     <button style='background-color: #C62E2E;' class='flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium'
@@ -98,7 +117,7 @@ class UnitController extends Controller
                             \$dispatch('set-unit', {$unitJson})
                         \">
                         <img class='w-5' src='https://img.icons8.com/?size=100&id=7DbfyX80LGwU&format=png&color=FFFFFF' alt=''>
-                        Delete
+                        Hapus
                     </button>
                 </div>
             ";

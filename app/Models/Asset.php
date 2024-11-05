@@ -10,7 +10,7 @@ class Asset extends Model
         'inventory_number',
         'name',
         'serial_number',
-        'brand',
+        'brand_id',
         'calibration',
         'photo',
         'branch_id',
@@ -19,5 +19,10 @@ class Asset extends Model
     public function branchOffice()
     {
         return $this->belongsTo(BranchOffice::class);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
 }
