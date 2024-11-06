@@ -12,15 +12,15 @@ class Item extends Model
     protected $fillable = [
         'name',
         'price',
-        'category_id',
+       // 'category_id',
         'unit_id',
         'branch_id'
     ];
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
 
     public function unit()
     {
