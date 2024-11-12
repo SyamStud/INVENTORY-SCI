@@ -244,13 +244,13 @@
                             name: 'name'
                         },
                         {
-                            data: 'brand',
-                            name: 'brand'
-                        },
-                        {
                             data: 'serial_number',
                             name: 'serial_number',
                             orderable: false
+                        },
+                        {
+                            data: 'brand',
+                            name: 'brand'
                         },
                         {
                             data: 'calibration',

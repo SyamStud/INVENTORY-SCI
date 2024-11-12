@@ -31,7 +31,7 @@
                     </x-dropdown-wrapper>
 
                     <x-dropdown-wrapper name="Barang">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('items.index')">
                             Daftar Barang
                         </x-dropdown-link>
                         <x-dropdown-link :href="route('units.index')">

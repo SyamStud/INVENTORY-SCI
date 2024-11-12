@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BranchController;
@@ -32,6 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/units/getUnits', [UnitController::class, 'getUnits'])->name('units.data');
         Route::resource('/units', UnitController::class);
+        
+        Route::get('/items/getItems', [ItemController::class, 'getItems'])->name('items.data');
+        Route::resource('/items', ItemController::class);
 
         Route::get('/positions/getPositions', [PositionController::class, 'getPositions'])->name('positions.data');
         Route::resource('/positions', PositionController::class);
