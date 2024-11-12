@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->double('price');
-            $table->foreignId('category_id')->nullable()->constrained();
+            // $table->foreignId('category_id')->nullable()->constrained();
             $table->foreignId('unit_id')->constrained();
             $table->foreignId('branch_id')->constrained('branch_offices')->onDelete('cascade');
             $table->softDeletes();
