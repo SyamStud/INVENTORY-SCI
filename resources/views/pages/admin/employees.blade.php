@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Daftar Pegawai
@@ -6,7 +7,42 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+
+        <div class="bg-white shadow-sm rounded-md p-5">
+            <div class="w-full flex justify-between">
+                <h5 class="font-semibold text-xl">Data Kepala Cabang</h5>
+                <img id="toggle-head-office" class="w-8 rotate-180 cursor-pointer"
+                    src="https://img.icons8.com/?size=100&id=85123&format=png&color=737373" alt="chevron-down" />
+            </div>
+
+            <form class="mt-5" id="addHeadOfficeForm" onsubmit="handleAddHeadOffice(event)">
+                @csrf
+
+                <div class="mb-4">
+                    <x-input-label for="npp" :value="__('Nomor Pokok Pegawai (NPP)')" />
+                    <x-text-input id="npp" class="block mt-1 w-full" type="text" name="npp" required value="{{ $headOffice->npp }}"
+                         />
+                </div>
+                <div class="mb-4">
+                    <x-input-label for="name" :value="__('Nama Kepala Cabang')" />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
+                     value="{{ $headOffice->name }}" />
+                </div>
+
+                <div class="w-full flex justify-end">
+                    <button type="submit"
+                        class="justify-end flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <hr class="w-full border border-gray-200 my-10">
+
+        <h5 class="font-semibold text-xl">Daftar Pegawai</h5>
+
+        <button class="mt-5 flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-employee')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
@@ -221,6 +257,52 @@
             }
         }
 
+        function handleAddHeadOffice(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitButton = $(form).find('button[type="submit"]');
+
+            setLoading(submitButton, true, 'Simpan', 'add');
+
+            $.ajax({
+                url: "{{ route('employees.store.headOffice') }}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    dataTable.ajax.reload();
+                    form.reset();
+
+                    if (response.status == 'error') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Data berhasil ditambahkan'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan saat menyimpan data'
+                    });
+
+                    console.error(xhr);
+                },
+                complete: function() {
+                    setTimeout(() => {
+                        setLoading(submitButton, false, 'Simpan', 'add');
+                    }, 500);
+                }
+            });
+        }
+
         function handleAddEmployee(event) {
             event.preventDefault();
             const form = event.target;
@@ -343,6 +425,12 @@
                 }
             });
         }
+
+        document.getElementById('toggle-head-office').addEventListener('click', function() {
+            const form = document.getElementById('addHeadOfficeForm');
+            form.classList.toggle('hidden');
+            this.classList.toggle('rotate-180');
+        });
     </script>
 
     <script>

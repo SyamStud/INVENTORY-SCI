@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Daftar Aset
@@ -383,7 +384,7 @@
                         icon: 'success',
                         title: 'Data berhasil diubah'
                     });
-                    
+
                 },
                 error: function(xhr) {
                     console.error(xhr);

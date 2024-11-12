@@ -40,4 +40,9 @@ class Loan extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function assets()
+    {
+        return $this->hasMany(LoanAsset::class);
+    }
 }

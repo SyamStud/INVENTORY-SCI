@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('outbounds', function (Blueprint $table) {
             $table->id();
             $table->string('outbound_number');
-            $table->string('delivery_to')->nullable();
-            $table->text('relesase_reason')->nullable();
+            $table->string('release_to')->nullable();
+            $table->text('release_reason')->nullable();
             $table->string('request_note_number')->nullable();
             $table->string('delivery_note_number')->nullable();
             $table->date('date_released');
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('released_by')->constrained('employees');
             $table->string('received_by')->nullable();
             $table->double('total_price');
+            $table->string('photo')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->foreignId('user_id')->constrained();

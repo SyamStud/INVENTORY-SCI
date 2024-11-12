@@ -9,8 +9,8 @@ class Inbound extends Model
     protected $fillable = [
         'inbound_number',
         'received_from',
-        'oder_note_number',
-        'date_contract',
+        'order_note_number',
+        'contract_note_number',
         'delivery_note_number',
         'date_received',
         'received_by',

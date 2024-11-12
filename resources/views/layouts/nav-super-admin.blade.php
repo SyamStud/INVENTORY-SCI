@@ -15,10 +15,13 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.index')">
+                        {{ __('Kantor Cabang') }}
+                    </x-nav-link>
 
-                    <x-dropdown-wrapper name="Aset">
+                    {{-- <x-dropdown-wrapper name="Branch">
                         <x-dropdown-link :href="route('assets.index')">
-                            Daftar Aset
+                            Daftar Branch
                         </x-dropdown-link>
                         <x-dropdown-link :href="route('brands.index')">
                             Daftar Merek
@@ -32,34 +35,7 @@
                         <x-dropdown-link :href="route('units.index')">
                             Daftar Unit
                         </x-dropdown-link>
-                    </x-dropdown-wrapper>
-
-                    <x-dropdown-wrapper name="Pegawai">
-                        <x-dropdown-link :href="route('employees.index')">
-                            Daftar Pegawai
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('positions.index')">
-                            Daftar Posisi
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper>
-
-                    <x-dropdown-wrapper name="Riwayat Barang">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Riwayat Masuk
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Riwayat Keluar
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper>
-
-                    <x-dropdown-wrapper name="Riwayat Peminjaman">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Riwayat Peminjaman
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Riwayat Pengembalian
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper>
+                    </x-dropdown-wrapper> --}}
                 </div>
             </div>
 

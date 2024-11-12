@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class OutboundItem extends Model
 {
     protected $fillable = [
-        'outbound_id',
+        'outbound_temp_id',
         'item_id',
         'quantity',
         'price',
-        'photo',
         'branch_id',
     ];
 

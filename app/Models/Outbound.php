@@ -8,8 +8,8 @@ class Outbound extends Model
 {
     protected $fillable = [
         'outbound_number',
-        'delivery_to',
-        'relesase_reason',
+        'release_to',
+        'release_reason',
         'request_note_number',
         'delivery_note_number',
         'date_released',
@@ -17,6 +17,7 @@ class Outbound extends Model
         'released_by',
         'received_by',
         'total_price',
+        'photo',
         'status',
         'branch_id',
         'user_id',
@@ -40,5 +41,10 @@ class Outbound extends Model
     public function releasedBy()
     {
         return $this->belongsTo(Employee::class, 'released_by');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OutboundItem::class);
     }
 }

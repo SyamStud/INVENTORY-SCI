@@ -52,6 +52,6 @@ class User extends Authenticatable
      */
     public function branchOffice()
     {
-        return $this->belongsTo(BranchOffice::class);
+        return $this->belongsTo(BranchOffice::class, 'branch_id');
     }
 }

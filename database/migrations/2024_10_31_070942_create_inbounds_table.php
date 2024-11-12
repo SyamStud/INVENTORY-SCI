@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('inbound_number');
             $table->string('received_from');
-            $table->string('oder_note_number');
-            $table->date('date_contract')->nullable();
+            $table->string('order_note_number');
+            $table->string('contract_note_number')->nullable();
             $table->string('delivery_note_number')->nullable();
             $table->date('date_received');
             $table->foreignId('received_by')->nullable()->constrained('employees');

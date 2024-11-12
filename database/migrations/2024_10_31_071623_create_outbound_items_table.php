@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained();
             $table->integer('quantity');
             $table->double('price');
-            $table->string('photo')->nullable();
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->timestamps();
         });

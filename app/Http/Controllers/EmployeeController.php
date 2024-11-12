@@ -17,7 +17,14 @@ class EmployeeController extends Controller
     public function index()
     {
         $positions = Position::where('branch_id', Auth::user()->branch_id)->get();
-        return view('pages.admin.employees', compact('positions'));
+        $headOffice = Employee::where('branch_id', Auth::user()->branch_id)->whereHas('position', function ($query) {
+            $query->where('name', 'Kepala Cabang');
+        })->first();
+
+        return view('pages.admin.employees', [
+            'positions' => $positions,
+            'headOffice' => $headOffice,
+        ]);
     }
 
     /**
@@ -51,6 +58,47 @@ class EmployeeController extends Controller
             'name' => $request->name,
             'npp' => $request->npp,
             'position_id' => $request->position_id,
+            'branch_id' => Auth::user()->branch_id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pegawai berhasil ditambahkan',
+        ]);
+    }
+
+    public function storeHeadOffice(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'npp' => 'required',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validation->errors()->first(),
+            ]);
+        }
+
+        $isExist = Employee::where('npp', $request->npp)->where('branch_id', Auth::user()->branch_id)->first();
+
+        if ($isExist) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'NPP sudah terdaftar',
+            ]);
+        }
+
+        $position = Position::create([
+            'name' => 'Kepala Cabang',
+            'branch_id' => Auth::user()->branch_id,
+        ]);
+
+        Employee::create([
+            'name' => $request->name,
+            'npp' => $request->npp,
+            'position_id' => $position->id,
             'branch_id' => Auth::user()->branch_id,
         ]);
 
