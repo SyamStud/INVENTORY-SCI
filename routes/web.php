@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoanController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BrandController;
@@ -36,6 +37,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/assets/getAssets', [AssetController::class, 'getAssets'])->name('assets.data');
         Route::resource('/assets', AssetController::class);
+
+        Route::get('/loans/getLoan', [LoanController::class, 'getLoan'])->name('loans.data');
+        Route::get('/loans/getLoanAsset', [LoanController::class, 'getLoanAssets'])->name('loans.assets.data');
+        Route::resource('/loans', LoanController::class);
     });
 });
 

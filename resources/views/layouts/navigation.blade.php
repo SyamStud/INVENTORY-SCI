@@ -53,7 +53,7 @@
                     </x-dropdown-wrapper>
 
                     <x-dropdown-wrapper name="Riwayat Peminjaman">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('loans.index')">
                             Riwayat Peminjaman
                         </x-dropdown-link>
                         <x-dropdown-link :href="route('profile.edit')">
