@@ -2858,18 +2858,23 @@
         {
             "name": "nesbot/carbon",
             "version": "3.8.1",
+            "version": "3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
+                "reference": "10ac0aa86b8062219ce21e8189123d611ca3ecd9"
                 "reference": "10ac0aa86b8062219ce21e8189123d611ca3ecd9"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/10ac0aa86b8062219ce21e8189123d611ca3ecd9",
                 "reference": "10ac0aa86b8062219ce21e8189123d611ca3ecd9",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/10ac0aa86b8062219ce21e8189123d611ca3ecd9",
+                "reference": "10ac0aa86b8062219ce21e8189123d611ca3ecd9",
                 "shasum": ""
             },
             "require": {
+                "carbonphp/carbon-doctrine-types": "<100.0",
                 "carbonphp/carbon-doctrine-types": "<100.0",
                 "ext-json": "*",
                 "php": "^8.1",
@@ -2959,6 +2964,7 @@
                     "type": "tidelift"
                 }
             ],
+            "time": "2024-11-03T16:02:24+00:00"
             "time": "2024-11-03T16:02:24+00:00"
         },
         {
@@ -9216,13 +9222,17 @@
         {
             "name": "sebastian/comparator",
             "version": "6.2.1",
+            "version": "6.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
                 "reference": "43d129d6a0f81c78bee378b46688293eb7ea3739"
+                "reference": "43d129d6a0f81c78bee378b46688293eb7ea3739"
             },
             "dist": {
                 "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/43d129d6a0f81c78bee378b46688293eb7ea3739",
+                "reference": "43d129d6a0f81c78bee378b46688293eb7ea3739",
                 "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/43d129d6a0f81c78bee378b46688293eb7ea3739",
                 "reference": "43d129d6a0f81c78bee378b46688293eb7ea3739",
                 "shasum": ""
@@ -9281,6 +9291,7 @@
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "security": "https://github.com/sebastianbergmann/comparator/security/policy",
                 "source": "https://github.com/sebastianbergmann/comparator/tree/6.2.1"
+                "source": "https://github.com/sebastianbergmann/comparator/tree/6.2.1"
             },
             "funding": [
                 {
@@ -9288,6 +9299,7 @@
                     "type": "github"
                 }
             ],
+            "time": "2024-10-31T05:30:08+00:00"
             "time": "2024-10-31T05:30:08+00:00"
         },
         {

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LoanController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -57,6 +58,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/users/getUsers', [UserController::class, 'getUsers'])->name('users.data')->middleware('role_or_permission:admin|manage-users');
         Route::resource('/users', UserController::class)->middleware('role_or_permission:admin|manage-users');
+
+        Route::get('/loans/getLoan', [LoanController::class, 'getLoan'])->name('loans.data');
+        Route::get('/loans/getLoanAsset', [LoanController::class, 'getLoanAssets'])->name('loans.assets.data');
+        Route::resource('/loans', LoanController::class);
     });
 
     Route::prefix('super-admin')->group(function () {
