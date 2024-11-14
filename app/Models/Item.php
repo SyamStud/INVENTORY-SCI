@@ -12,15 +12,10 @@ class Item extends Model
     protected $fillable = [
         'name',
         'price',
-       // 'category_id',
+        'stock',
         'unit_id',
         'branch_id'
     ];
-
-    // public function category()
-    // {
-    //     return $this->belongsTo(Category::class);
-    // }
 
     public function unit()
     {
@@ -30,5 +25,15 @@ class Item extends Model
     public function branchOffice()
     {
         return $this->belongsTo(BranchOffice::class);
+    }
+
+    public function inbounds()
+    {
+        return $this->hasMany(InboundItem::class);
+    }
+
+    public function outbounds()
+    {
+        return $this->hasMany(OutboundItem::class);
     }
 }

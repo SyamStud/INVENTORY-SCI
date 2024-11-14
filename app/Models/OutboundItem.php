@@ -11,6 +11,7 @@ class OutboundItem extends Model
         'item_id',
         'quantity',
         'price',
+        'total_price',
         'branch_id',
     ];
 

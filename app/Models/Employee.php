@@ -25,4 +25,9 @@ class Employee extends Model
     {
         return $this->belongsTo(BranchOffice::class);
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }

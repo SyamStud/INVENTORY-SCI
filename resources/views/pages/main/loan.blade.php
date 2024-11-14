@@ -67,7 +67,7 @@
 
                 <div class="mb-4 w-full md:w-96">
                     <x-input-label for="notes" :value="__('Keterangan')" />
-                    <x-text-input id="notes" class="block mt-1 w-full" type="number" name="notes" required
+                    <x-text-input id="notes" class="block mt-1 w-full" type="text" name="notes" required
                         autofocus />
                 </div>
 
@@ -104,7 +104,10 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
+                        <th>Tag Number</th>
                         <th>Nama Aset</th>
+                        <th>Merek</th>
+                        <th>Serial Number</th>
                         <th>Kuantitas</th>
                         <th>Durasi</th>
                         <th>Kondisi</th>
@@ -142,7 +145,7 @@
                     <div class="mb-4">
                         <x-input-label for="edit_duration" :value="__('Durasi')" />
                         <x-text-input id="edit_duration" class="block mt-1 w-full" type="number" name="duration"
-                            required autofocus x-bind:value="asset?.duration"/>
+                            required autofocus x-bind:value="asset?.duration" />
                     </div>
 
                     <div class="mb-4">
@@ -279,6 +282,32 @@
                         </select>
                     </div>
 
+                    <div class="mb-4 w-full">
+                        <x-input-label class="mb-2" for="photos" :value="__('Unggah Foto')" />
+
+                        <!-- Custom Input File -->
+                        <label class="block w-full cursor-pointer">
+                            <div id="input-photo"
+                                class="flex items-center justify-between p-3 border border-dashed rounded-lg bg-gray-50 hover:bg-gray-100">
+                                <span id="file-label" class="text-sm text-gray-600">
+                                    Klik untuk memilih foto (maksimal 2 foto)
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 16.5V7.5A2.5 2.5 0 015.5 5h13a2.5 2.5 0 012.5 2.5v9a2.5 2.5 0 01-2.5 2.5h-13A2.5 2.5 0 013 16.5zM10 9.5h4M8 13.5h8m-5 4v.5m0-4.5h-.5" />
+                                </svg>
+                            </div>
+                            <input id="photos" type="file" name="photos[]" class="hidden" multiple
+                                onchange="updateFileList()" />
+                        </label>
+
+                        <!-- File List -->
+                        <div id="file-list" class="mt-2 text-sm text-gray-700 space-y-1">
+                            <!-- Nama file akan ditampilkan di sini -->
+                        </div>
+                    </div>
+
                     <div class="w-full flex justify-end">
                         <button type="submit"
                             class="justify-end flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm">
@@ -294,20 +323,19 @@
                 <h5 class="font-semibold text-md">Konfirmasi Cetak Bukti Peminjaman</h5>
 
                 <p class="mt-5">Apakah anda ingin mencetak bukti peminjaman ?</p>
-                <p class="mt-5 italic text-sm text-gray-500">* Bukti peminjaman masih dapat dicetak lain waktu melalui
+                <p class="mt-5 italic text-sm text-gray-500">* Bukti peminjaman masih dapat dilihat lain waktu melalui
                     dashboard</p>
 
                 <form class="mt-5" id="receiptForm">
                     <div class="w-full flex justify-end gap-2">
-                        <button type="button"
-                            onclick="dispatchEvent(new CustomEvent('close-modal', {detail: 'receipt-letter'}))"
+                        <button type="button" x-on:click.prevent="$dispatch('close-modal', 'receipt-letter')"
                             class="justify-end flex items-center gap-1 px-4 py-2 bg-transparent border-2 border-gray-300 shadow-sm rounded-md font-medium text-sm">
                             Tutup
                         </button>
 
                         <button type="submit"
                             class="justify-end flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm">
-                            Cetak Bukti Peminjaman
+                            Preview Dokumen
                         </button>
                     </div>
                 </form>
@@ -382,8 +410,20 @@
                             searchable: false
                         },
                         {
+                            data: 'tag_number',
+                            name: 'tag_number'
+                        },
+                        {
                             data: 'asset',
                             name: 'asset'
+                        },
+                        {
+                            data: 'brand',
+                            name: 'brand'
+                        },
+                        {
+                            data: 'serial_number',
+                            name: 'serial_number'
                         },
                         {
                             data: 'quantity',
@@ -415,7 +455,7 @@
                             }
                         },
                         {
-                            targets: 6,
+                            targets: 9,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center gap-2 w-max');
                             }
@@ -465,10 +505,6 @@
                         console.log(response.loan);
 
                         $('#customer_name').val(response.loan.customer_name);
-                        // $('#order_note_number').val(response.loan.order_note_number);
-                        // $('#contract_note_number').val(response.loan.contract_note_number);
-                        // $('#delivery_note_number').val(response.loan.delivery_note_number);
-
                     }
                 },
                 error: function(xhr) {
@@ -648,8 +684,8 @@
 
                     receiptForm.off('submit').on('submit', function(e) {
                         e.preventDefault();
-                        console.log(response.loan_id);
-                        window.location.href = `/loans/receipt/${response.loan_id}`;
+                        console.log(response.document);
+                        window.location.href = `/storage/${response.document}`;
                     });
                 },
                 error: function(xhr) {
@@ -673,6 +709,46 @@
                 button.css('background-color', '#2563EB');
                 button.html(text);
             }
+        }
+
+        function updateFileList() {
+            const input = document.getElementById('photos');
+            const fileList = document.getElementById('file-list');
+            const label = document.getElementById('file-label');
+            const inputCustom = document.getElementById('input-photo');
+
+            // Bersihkan daftar file sebelumnya
+            fileList.innerHTML = '';
+
+            // Jika file yang dipilih lebih dari 2
+            if (input.files.length > 2) {
+                label.textContent = 'Maksimal 2 foto';
+                label.style.color = 'red';
+                input.value = '';
+                inputCustom.style.border = '1px solid red';
+                inputCustom.style.backgroundColor = '#fef2f2';
+                return;
+            } else {
+                label.style.color = '#374151';
+                inputCustom.style.border = '1px solid #D1D5DB';
+                inputCustom.style.backgroundColor = '#F3F4F6';
+            }
+
+            // Jika tidak ada file yang dipilih
+            if (input.files.length === 0) {
+                label.textContent = 'Klik untuk memilih gambar (maksimal 2 foto)';
+                return;
+            }
+
+            // Update label dengan jumlah file
+            label.textContent = `${input.files.length} file dipilih`;
+
+            // Tambahkan nama file ke daftar
+            Array.from(input.files).forEach(file => {
+                const listItem = document.createElement('div');
+                listItem.textContent = `📄 ${file.name}`;
+                fileList.appendChild(listItem);
+            });
         }
     </script>
 

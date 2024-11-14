@@ -11,6 +11,7 @@ class InboundItemTemp extends Model
         'item_id',
         'quantity',
         'cost',
+        'total_cost',
         'branch_id',
     ];
 

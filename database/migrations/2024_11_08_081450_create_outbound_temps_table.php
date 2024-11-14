@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('request_note_number')->nullable();
             $table->string('delivery_note_number')->nullable();
             $table->date('date_released');
-            $table->foreignId('approved_by')->constrained('employees');
-            $table->foreignId('released_by')->constrained('employees');
+            $table->foreignId('approved_by')->nullable()->constrained('employees');
+            $table->foreignId('released_by')->nullable()->constrained('employees');
             $table->string('received_by')->nullable();
             $table->double('total_price');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

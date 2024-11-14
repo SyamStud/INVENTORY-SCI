@@ -98,7 +98,7 @@
                         <th>Kabupaten/Kota</th>
                         <th>Kecamatan</th>
                         <th>Kelurahan/Desa</th>
-                        <th>Aksi</th>
+                        <th class="w-40">Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -322,12 +322,6 @@
                             targets: 0,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('text-center');
-                            }
-                        },
-                        {
-                            targets: 1,
-                            createdCell: function(td, cellData, rowData, row, col) {
-                                $(td).addClass('w-full');
                             }
                         },
                         {

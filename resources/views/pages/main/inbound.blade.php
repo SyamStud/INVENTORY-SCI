@@ -5,8 +5,6 @@
         <div class="w-full flex justify-center md:justify-start">
             <h2 id="code" class="font-semibold text-xl text-gray-800 leading-tight">
             </h2>
-            {{-- <h2 id="date" class="font-semibold text-xl text-gray-800 leading-tight">
-            </h2> --}}
         </div>
     </x-slot>
 
@@ -39,18 +37,6 @@
                     <x-text-input id="delivery_note_number" class="block mt-1 w-full" type="text"
                         value="{{ $inbound->delivery_note_number ?? '' }}" name="delivery_note_number" required
                         autofocus />
-                </div>
-                <div class="mb-4 w-full">
-                    <x-input-label for="received_by" :value="__('Diterima Oleh')" />
-                    <select class="w-full select2" name="received_by" x-data x-init="$nextTick(() => {
-                        $('.select2').select2(); // Inisialisasi Select2
-                    })">
-                        @foreach ($employees as $employee)
-                            <option value="{{ $employee->id }}">
-                                {{ $employee->name }}
-                            </option>
-                        @endforeach
-                    </select>
                 </div>
             </div>
 

@@ -11,6 +11,7 @@ class OutboundItemTemp extends Model
         'item_id',
         'quantity',
         'price',
+        'total_price',
         'photo',
         'branch_id',
     ];

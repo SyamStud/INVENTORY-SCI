@@ -21,32 +21,50 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-dropdown-wrapper name="Aset">
-                        <x-dropdown-link :href="route('assets.index')">
-                            Daftar Aset
+                    <x-dropdown-wrapper width="content" name="Persetujuan Dokumen">
+                        <x-dropdown-link :href="route('documents.loans.index')">
+                            Dokumen Peminjaman Aset
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('brands.index')">
-                            Daftar Merek
+                        <x-dropdown-link :href="route('profile.edit')">
+                            Dokumen Barang Keluar
                         </x-dropdown-link>
-                    </x-dropdown-wrapper>
-
-                    <x-dropdown-wrapper name="Barang">
-                        <x-dropdown-link :href="route('items.index')">
-                            Daftar Barang
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('units.index')">
-                            Daftar Unit
+                        <x-dropdown-link :href="route('profile.edit')">
+                            Dokumen Barang Masuk
                         </x-dropdown-link>
                     </x-dropdown-wrapper>
 
-                    <x-dropdown-wrapper name="Pegawai">
-                        <x-dropdown-link :href="route('employees.index')">
-                            Daftar Pegawai
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('positions.index')">
-                            Daftar Posisi
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper>
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-assets'))
+                        <x-dropdown-wrapper name="Aset">
+                            <x-dropdown-link :href="route('assets.index')">
+                                Daftar Aset
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('brands.index')">
+                                Daftar Merek
+                            </x-dropdown-link>
+                        </x-dropdown-wrapper>
+                    @endif
+
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-items'))
+                        <x-dropdown-wrapper name="Barang">
+                            <x-dropdown-link :href="route('items.index')">
+                                Daftar Barang
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('units.index')">
+                                Daftar Unit
+                            </x-dropdown-link>
+                        </x-dropdown-wrapper>
+                    @endif
+
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-employees'))
+                        <x-dropdown-wrapper name="Pegawai">
+                            <x-dropdown-link :href="route('employees.index')">
+                                Daftar Pegawai
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('positions.index')">
+                                Daftar Posisi
+                            </x-dropdown-link>
+                        </x-dropdown-wrapper>
+                    @endif
 
                     <x-dropdown-wrapper name="Riwayat Barang">
                         <x-dropdown-link :href="route('profile.edit')">
@@ -65,6 +83,14 @@
                             Riwayat Pengembalian
                         </x-dropdown-link>
                     </x-dropdown-wrapper>
+
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-users'))
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                            {{ __('Pengguna') }}
+                        </x-nav-link>
+                    @endif
+
+
                 </div>
             </div>
 

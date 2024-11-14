@@ -41,17 +41,22 @@ class OutboundTempController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(), [
-            'outbound_number' => 'required',
-            'release_to' => 'required',
-            'release_reason' => 'required',
-            'request_note_number' => 'required',
-            'delivery_note_number' => 'required',
-            'received_by' => 'required',
-            'item_id' => 'required',
-            'quantity' => 'required',
-            'price' => 'required',
-        ]);
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'outbound_number' => 'required',
+                'release_to' => 'required',
+                'release_reason' => 'required',
+                'request_note_number' => 'required',
+                'delivery_note_number' => 'required',
+                'received_by' => 'required',
+                'item_id' => 'required',
+                'quantity' => 'required|numeric|min:1',
+            ],
+            [
+                'quantity.min' => 'Jumlah barang minimal 1'
+            ]
+        );
 
         if ($validation->fails()) {
             return response()->json([
@@ -73,8 +78,6 @@ class OutboundTempController extends Controller
                 'delivery_note_number' => $request->delivery_note_number,
                 'date_released' => now(),
                 'received_by' => $request->received_by,
-                'released_by' => Auth::user()->id,
-                'approved_by' => Auth::user()->id,
                 'total_price' => 0,
                 'branch_id' => Auth::user()->branch_id,
                 'user_id' => Auth::id(),
@@ -94,11 +97,8 @@ class OutboundTempController extends Controller
             ]);
         }
 
-        $totalPrice = 0;
-
         $isExist = OutboundItemTemp::where('outbound_temp_id', $outbound->id)
             ->where('item_id', $request->item_id)
-            ->where('price', $request->price)
             ->where('branch_id', Auth::user()->branch_id)
             ->exists();
 
@@ -109,16 +109,25 @@ class OutboundTempController extends Controller
             ]);
         }
 
+        $item = Item::find($request->item_id);
+
+        if ($item->stock < $request->quantity) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Stok barang hanya tersisa ' . $item->stock
+            ]);
+        }
+
         $outbound->items()->create([
             'item_id' => $request->item_id,
             'quantity' => $request->quantity,
-            'price' => $request->price,
+            'price' => $item->price,
+            'total_price' => $request->quantity * $item->price,
             'branch_id' => Auth::user()->branch_id,
         ]);
 
-        $totalPrice += $request->quantity * $request->price;
-
-        $outbound->update(['total_price' => $totalPrice]);
+        $outbound->total_price += ($request->quantity * $item->price);
+        $outbound->save();
 
         return response()->json([
             'status' => 'success',
@@ -132,14 +141,10 @@ class OutboundTempController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $outboundItemTemp = OutboundItemTemp::where('id', $id)
-            ->where('branch_id', Auth::user()->branch_id)
-            ->first();
-
         $validation = Validator::make($request->all(), [
-            'outbound_item_id' => 'required',
-            'quantity' => 'required',
-            'price' => 'required',
+            'quantity' => 'required|numeric|min:1',
+        ], [
+            'quantity.min' => 'Jumlah barang minimal 1'
         ]);
 
         if ($validation->fails()) {
@@ -149,9 +154,23 @@ class OutboundTempController extends Controller
             ]);
         }
 
+        $outboundItemTemp = OutboundItemTemp::where('id', $id)
+            ->where('branch_id', Auth::user()->branch_id)
+            ->first();
+
+        $item = Item::find($outboundItemTemp->item_id);
+
+        if ($item->stock < $request->quantity) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Stok barang hanya tersisa ' . $item->stock
+            ]);
+        }
+
         $outboundItemTemp->update([
             'quantity' => $request->quantity,
-            'price' => $request->price,
+            'price' => $item->price,
+            'total_price' => $request->quantity * $item->price,
         ]);
 
         return response()->json([
@@ -187,7 +206,7 @@ class OutboundTempController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Penerimaan berhasil dibatalkan',
+            'message' => 'Pengeluaran berhasil dibatalkan',
         ]);
     }
 
@@ -197,6 +216,12 @@ class OutboundTempController extends Controller
             ->where('branch_id', Auth::user()->branch_id)
             ->first();
 
+        $outboundTemp->items->each(function ($outboundItem) {
+            $item = Item::find($outboundItem->item_id);
+            $item->stock -= $outboundItem->quantity;
+            $item->save();
+        });
+
         $outbound = Outbound::create([
             'outbound_number' => $outboundTemp->outbound_number,
             'release_to' => $outboundTemp->release_to,
@@ -205,12 +230,14 @@ class OutboundTempController extends Controller
             'delivery_note_number' => $outboundTemp->delivery_note_number,
             'date_released' => $outboundTemp->date_released,
             'received_by' => $outboundTemp->received_by,
-            'released_by' => $outboundTemp->released_by,
-            'approved_by' => $outboundTemp->approved_by,
+            'released_by' => $request->released_by,
+            'approved_by' => $request->approved_by,
             'total_price' => $outboundTemp->total_price,
             'branch_id' => $outboundTemp->branch_id,
             'user_id' => $outboundTemp->user_id,
         ]);
+
+
 
         $uploadedPhotos = [];
 
@@ -234,6 +261,7 @@ class OutboundTempController extends Controller
                     'item_id' => $item->item_id,
                     'quantity' => $item->quantity,
                     'price' => $item->price,
+                    'total_price' => $item->total_price,
                     'branch_id' => $item->branch_id,
                 ];
             })->toArray()
@@ -243,7 +271,7 @@ class OutboundTempController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Penerimaan berhasil dikonfirmasi',
+            'message' => 'Pengeluaran berhasil dikonfirmasi',
             'outbound_id' => $outbound->id,
         ]);
     }

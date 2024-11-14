@@ -14,10 +14,25 @@ return new class extends Migration
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->string('inventory_number');
+            $table->string('tag_number');
             $table->string('name');
-            $table->string('serial_number');
             $table->string('brand_id');
-            $table->string('calibration');
+            $table->string('serial_number');
+            $table->string('color');
+            $table->string('size');
+            $table->enum('condition', ['baik', 'rusak']);
+            $table->enum('status', ['terpakai', 'tidak terpakai']);
+            $table->string('permit');
+            $table->json('calibration');
+            $table->string('calibration_number');
+            $table->integer('calibration_interval');
+            $table->date('calibration_start_date');
+            $table->date('calibration_due_date');
+            $table->string('calibration_institution');
+            $table->string('calibration_type');
+            $table->string('range');
+            $table->string('correction_factor');
+            $table->enum('significance', ['ya', 'tidak']);
             $table->string('photo');
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->timestamps();

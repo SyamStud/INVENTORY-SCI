@@ -14,6 +14,20 @@ class Asset extends Model
         'calibration',
         'photo',
         'branch_id',
+        'tag_number',
+        'color',
+        'condition',
+        'status',
+        'calibration_number',
+        'calibration_interval',
+        'calibration_start_date',
+        'calibration_due_date',
+        'calibration_institution',
+        'calibration_type',
+        'range',
+        'correction_factor',
+        'significance',
+        'size'
     ];
 
     public function branchOffice()

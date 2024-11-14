@@ -28,15 +28,15 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="name" :value="__('Nama Aset')" />
-                        <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
-                            autofocus />
+                        <x-input-label for="tag_number" :value="__('Tag Number')" />
+                        <x-text-input id="tag_number" class="block mt-1 w-full" type="text" name="tag_number"
+                            required autofocus />
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="serial_number" :value="__('Nomor Seri')" />
-                        <x-text-input id="serial_number" class="block mt-1 w-full" type="text" name="serial_number"
-                            required autofocus />
+                        <x-input-label for="name" :value="__('Nama Aset')" />
+                        <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
+                            autofocus />
                     </div>
 
                     <div class="mb-4 w-full">
@@ -49,16 +49,126 @@
                     </div>
 
                     <div class="mb-4">
+                        <x-input-label for="serial_number" :value="__('Nomor Seri')" />
+                        <x-text-input id="serial_number" class="block mt-1 w-full" type="text" name="serial_number"
+                            required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="color" :value="__('Warna')" />
+                        <x-text-input id="color" class="block mt-1 w-full" type="text" name="color" required
+                            autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="size" :value="__('Ukuran')" />
+                        <x-text-input id="size" class="block mt-1 w-full" type="text" name="size" required
+                            autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="condition" :value="__('Kondisi Barang')" />
+                        <select name="condition"
+                            class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
+                            <option value="baik">Baik</option>
+                            <option value="rusak">Rusak</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="status" :value="__('Status Barang')" />
+                        <select name="status"
+                            class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
+                            <option value="terpakai">Terpakai</option>
+                            <option value="tidak terpakai">Tidak Terpakai</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_number" :value="__('No. Sertifikasi Kalibrasi / Perizinan')" />
+                        <x-text-input id="calibration_number" class="block mt-1 w-full" type="text"
+                            name="calibration_number" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_interval" :value="__('Interval Kalibrasi (Tahun)')" />
+                        <x-text-input id="calibration_interval" class="block mt-1 w-full" type="number"
+                            name="calibration_interval" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_start_date" :value="__('Tanggal Kalibrasi')" />
+                        <x-text-input id="calibration_start_date" class="block mt-1 w-full" type="date"
+                            name="calibration_start_date" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_due_date" :value="__('Tanggal Berakhirnya Masa Kalibrasi')" />
+                        <x-text-input id="calibration_due_date" class="block mt-1 w-full" type="date"
+                            name="calibration_due_date" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_institution" :value="__('Lembaga Kalibrasi')" />
+                        <x-text-input id="calibration_institution" class="block mt-1 w-full" type="text"
+                            name="calibration_institution" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="calibration_type" :value="__('Jenis Kalibrasi')" />
+                        <select name="calibration_type"
+                            class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
+                            <option value="internal">Internal</option>
+                            <option value="eksternal">Eksternal</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="range" :value="__('Range / Kapasitas')" />
+                        <x-text-input id="range" class="block mt-1 w-full" type="text" name="range"
+                            required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="correction_factor" :value="__('Faktor Koreksi')" />
+                        <x-text-input id="correction_factor" class="block mt-1 w-full" type="text"
+                            name="correction_factor" required autofocus />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="significance" :value="__('Signifikan')" />
+                        <select name="significance"
+                            class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
+                            <option value="ya">Ya</option>
+                            <option value="tidak">Tidak</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <x-input-label for="calibration" :value="__('Unggah Dokumen Kalibrasi')" />
-                        <label for="calibration" id="calibrationLabel"
+                        <label for="calibration"
+                            class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
+                            <img class="w-5"
+                                src="https://img.icons8.com/?size=100&id=pEujrB5ongzP&format=png&color=000000"
+                                alt="">
+                            Pilih Dokumen
+                        </label>
+                        <input type="file" id="calibration" name="calibration[]" accept=".pdf" multiple
+                            class="hidden" onchange="showMultipleFiles(event, 'calibrationFilename')" />
+                        <div id="calibrationFilename" class="mt-2 text-sm text-gray-600"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label for="permit" :value="__('Unggah Dokumen Perizinan')" />
+                        <label for="permit" id="permitLabel"
                             class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
                             <img class="w-5"
                                 src="https://img.icons8.com/?size=100&id=pEujrB5ongzP&format=png&color=000000"
                                 alt="">
                             <span id="text-document">Pilih Dokumen</span>
                         </label>
-                        <input type="file" id="calibration" name="calibration" accept=".pdf" class="hidden"
-                            onchange="showFileName(event, 'calibrationLabel')" />
+                        <input type="file" id="permit" name="permit" accept=".pdf" class="hidden"
+                            onchange="showFileName(event, 'permitLabel')" />
                     </div>
 
                     <div class="mb-4">
@@ -90,12 +200,27 @@
                     <tr class="text-white">
                         <th class="w-10">No</th>
                         <th>Nomor Inventaris</th>
+                        <th>Tag Number</th>
                         <th>Nama Aset</th>
-                        <th>Nomor Seri</th>
                         <th>Merek</th>
-                        <th class="w-32">Kalibrasi</th>
-                        <th class="w-28">Foto</th>
-                        <th class="w-40">Aksi</th>
+                        <th>Nomor Seri</th>
+                        <th>Warna</th>
+                        <th>Ukuran</th>
+                        <th>Kondisi</th>
+                        <th>Status</th>
+                        <th>No. Sertifikasi</th>
+                        <th>Interval Kalibrasi</th>
+                        <th>Tanggal Kalibrasi</th>
+                        <th>Tanggal Kalibrasi Berakhir</th>
+                        <th>Lembaga Kalibrasi</th>
+                        <th>Jenis Kalibrasi</th>
+                        <th>Range / Kapasitas</th>
+                        <th>Faktor Koreksi</th>
+                        <th>Signifikasi</th>
+                        <th>Kalibrasi</th>
+                        <th>Perizinan</th>
+                        <th>Foto</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -163,9 +288,9 @@
                             alt="">
                         Pilih Dokumen
                     </label>
-                    <input type="file" id="calibration" name="calibration" accept=".pdf" class="hidden"
-                        onchange="showFileName(event, 'calibrationFilename')" />
-                    <p id="calibrationFilename" class="mt-2 text-sm text-gray-600"></p>
+                    <input type="file" id="calibration" name="calibration[]" accept=".pdf" multiple
+                        class="hidden" onchange="showMultipleFiles(event, 'calibrationFilename')" />
+                    <div id="calibrationFilename" class="mt-2 text-sm text-gray-600"></div>
                 </div>
 
                 <div class="mb-4">
@@ -240,8 +365,17 @@
                             orderable: false
                         },
                         {
+                            data: 'tag_number',
+                            name: 'tag_number',
+                            orderable: false
+                        },
+                        {
                             data: 'name',
                             name: 'name'
+                        },
+                        {
+                            data: 'brand',
+                            name: 'brand'
                         },
                         {
                             data: 'serial_number',
@@ -249,12 +383,65 @@
                             orderable: false
                         },
                         {
-                            data: 'brand',
-                            name: 'brand'
+                            data: 'color',
+                            name: 'color'
+                        },
+                        {
+                            data: 'size',
+                            name: 'size'
+                        },
+                        {
+                            data: 'condition',
+                            name: 'condition'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
+                        },
+                        {
+                            data: 'calibration_number',
+                            name: 'calibration_number'
+                        },
+                        {
+                            data: 'calibration_interval',
+                            name: 'calibration_interval'
+                        },
+                        {
+                            data: 'calibration_start_date',
+                            name: 'calibration_start_date'
+                        },
+                        {
+                            data: 'calibration_due_date',
+                            name: 'calibration_due_date',
+                        },
+                        {
+                            data: 'calibration_institution',
+                            name: 'calibration_institution'
+                        },
+                        {
+                            data: 'calibration_type',
+                            name: 'calibration_type'
+                        },
+                        {
+                            data: 'range',
+                            name: 'range'
+                        },
+                        {
+                            data: 'correction_factor',
+                            name: 'correction_factor'
+                        },
+                        {
+                            data: 'significance',
+                            name: 'significance'
                         },
                         {
                             data: 'calibration',
                             name: 'calibration',
+                            orderable: false
+                        },
+                        {
+                            data: 'permit',
+                            name: 'permit',
                             orderable: false
                         },
                         {
@@ -275,12 +462,6 @@
                                 $(td).addClass('text-center');
                             }
                         },
-                        {
-                            targets: 7,
-                            createdCell: function(td, cellData, rowData, row, col) {
-                                $(td).addClass('flex justify-center gap-2 w-max');
-                            }
-                        }
                     ]
                 }).columns.adjust()
                 .responsive.recalc();
@@ -309,6 +490,10 @@
             const form = event.target;
             const formData = new FormData(form);
             const submitButton = $(form).find('button[type="submit"]');
+
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
 
             setLoading(submitButton, true, 'Tambah Aset', 'add');
 
@@ -443,6 +628,27 @@
                 span.textContent = input.files[0].name;
             } else {
                 span.textContent = elementId === 'calibrationLabel' ? 'Pilih Dokumen' : 'Pilih Foto';
+            }
+        }
+
+        function showMultipleFiles(event, elementId) {
+            const input = event.target;
+            const filesContainer = document.getElementById(elementId);
+            filesContainer.innerHTML = '';
+
+            if (input.files.length > 0) {
+                const fileList = document.createElement('ul');
+                fileList.className = 'list-disc pl-5';
+
+                Array.from(input.files).forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    fileList.appendChild(li);
+                });
+
+                filesContainer.appendChild(fileList);
+            } else {
+                filesContainer.textContent = 'Tidak ada file yang dipilih';
             }
         }
     </script>

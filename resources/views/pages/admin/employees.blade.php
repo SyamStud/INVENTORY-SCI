@@ -20,13 +20,13 @@
 
                 <div class="mb-4">
                     <x-input-label for="npp" :value="__('Nomor Pokok Pegawai (NPP)')" />
-                    <x-text-input id="npp" class="block mt-1 w-full" type="text" name="npp" required value="{{ $headOffice->npp }}"
+                    <x-text-input id="npp" class="block mt-1 w-full" type="text" name="npp" required value="{{ $headOffice->npp ?? '' }}"
                          />
                 </div>
                 <div class="mb-4">
                     <x-input-label for="name" :value="__('Nama Kepala Cabang')" />
                     <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
-                     value="{{ $headOffice->name }}" />
+                     value="{{ $headOffice->name ?? '' }}" />
                 </div>
 
                 <div class="w-full flex justify-end">

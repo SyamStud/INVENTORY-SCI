@@ -12,9 +12,37 @@ class Loan extends Model
         'operation_head',
         'loan_officer',
         'general_division',
+        'status',
+        'photos',
+        'document_path',
         'branch_id',
         'user_id',
     ];
+
+    public function scopePendingSignatures($query, $employeeId, $branchId)
+    {
+        return $query->where('status', 'pending')
+            ->where('branch_id', $branchId)
+            ->where(function ($query) use ($employeeId) {
+                $query->where('operation_head', $employeeId)
+                    ->orWhere('loan_officer', $employeeId)
+                    ->orWhere('general_division', $employeeId);
+            })
+            ->whereDoesntHave('signatures', function ($query) use ($employeeId) {
+                $query->where(function ($q) use ($employeeId) {
+                    $q->where('position', 'KEPALA BIDANG OPERASI')
+                        ->where('employee_id', $employeeId);
+                })
+                    ->orWhere(function ($q) use ($employeeId) {
+                        $q->where('position', 'PETUGAS PINJAMAN')
+                            ->where('employee_id', $employeeId);
+                    })
+                    ->orWhere(function ($q) use ($employeeId) {
+                        $q->where('position', 'BAGIAN UMUM')
+                            ->where('employee_id', $employeeId);
+                    });
+            });
+    }
 
     public function operationHead()
     {
@@ -44,5 +72,10 @@ class Loan extends Model
     public function assets()
     {
         return $this->hasMany(LoanAsset::class);
+    }
+
+    public function signatures()
+    {
+        return $this->morphMany(Signature::class, 'signable');
     }
 }

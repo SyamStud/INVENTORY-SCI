@@ -31,7 +31,6 @@ class ItemController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',
             'unit_id' => 'required',
         ]);
 
@@ -44,7 +43,6 @@ class ItemController extends Controller
 
         $item = new Item();
         $item->name = $request->name;
-        $item->price = $request->price;
         $item->unit_id = $request->unit_id;
 
         $item->branch_id = Auth::user()->branch_id;
@@ -63,7 +61,6 @@ class ItemController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',
             'unit_id' => 'required',
         ]);
 
@@ -75,7 +72,6 @@ class ItemController extends Controller
         }
 
         $item->name = $request->name;
-        $item->price = $request->price;
         $item->unit_id = $request->unit_id;
 
         $item->save();
@@ -108,6 +104,9 @@ class ItemController extends Controller
             ->addColumn('unit', function ($item) {
                 return $item->unit->name;
             })
+            ->addColumn('price', function ($item) {
+                return 'Rp ' . number_format($item->price, 0, ',', '.');
+            })
             ->addColumn('action', function ($item) {
                 $itemJson = htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8');
 
@@ -135,7 +134,7 @@ class ItemController extends Controller
                 </div>
             ";
             })
-            ->rawColumns(['unit','action'])
+            ->rawColumns(['unit', 'action'])
             ->make(true);
     }
 }

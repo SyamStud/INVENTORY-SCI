@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'branch_id',
+        'employee_id',
     ];
 
     /**
@@ -53,5 +55,13 @@ class User extends Authenticatable
     public function branchOffice()
     {
         return $this->belongsTo(BranchOffice::class, 'branch_id');
+    }
+
+    /**
+     * Get the employee that the user belongs to.
+     */
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

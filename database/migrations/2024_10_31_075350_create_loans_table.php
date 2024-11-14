@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignId('operation_head')->constrained('employees');
             $table->foreignId('loan_officer')->constrained('employees');
             $table->foreignId('general_division')->constrained('employees');
+            $table->enum('status', ['pending', 'on_loan', 'returned'])->default('pending');
+            $table->json('photos')->nullable();
+            $table->string('document_path')->nullable();
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->foreignId('user_id')->constrained();
             $table->timestamps();

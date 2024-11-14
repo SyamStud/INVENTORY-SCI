@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Daftar Barang
@@ -26,14 +27,14 @@
                             autofocus />
                     </div>
 
-                    <div class="mb-4">
+                    {{-- <div class="mb-4">
                         <x-input-label for="price" :value="__('Harga')" />
-                        <x-text-input id="price" class="block mt-1 w-full" type="text" name="price " required
+                        <x-text-input id="price" class="block mt-1 w-full" type="number" name="price " required
                             autofocus />
-                    </div>
+                    </div> --}}
 
                     <div class="mb-4 w-full">
-                        <x-input-label for="name" :value="__('Unit')" />
+                        <x-input-label for="name" :value="__('Satuan Unit')" />
                         <select class="w-full select2" name="unit_id">
                             @foreach ($units as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->name }}</option>
@@ -59,6 +60,7 @@
                         <th>Nama Barang</th>
                         <th>Harga</th>
                         <th>Unit</th>
+                        <th>Stok</th>
                         <th class="w-40">Aksi</th>
                     </tr>
                 </thead>
@@ -93,7 +95,7 @@
                 </div>
 
                 <div class="mb-4 w-full">
-                    <x-input-label for="name" :value="__('Nama Barang')" />
+                    <x-input-label for="name" :value="__('Satuan Unit')" />
                     <select class="w-full select2" name="unit_id" x-data x-init="$nextTick(() => {
                         $('.select2').select2(); // Inisialisasi Select2
                         if (item) {
@@ -177,6 +179,11 @@
                             orderable: false
                         },
                         {
+                            data: 'stock',
+                            name: 'stock',
+                            orderable: false
+                        },
+                        {
                             data: 'action',
                             name: 'action',
                             orderable: false,
@@ -184,13 +191,13 @@
                         }
                     ],
                     columnDefs: [{
-                            targets: 0,
+                            targets: [0, 2, 3, 4],
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('text-center');
                             }
                         },
                         {
-                            targets: 4,
+                            targets: 5,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center gap-2 w-max');
                             }

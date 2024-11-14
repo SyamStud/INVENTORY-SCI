@@ -18,24 +18,9 @@
                     <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.index')">
                         {{ __('Kantor Cabang') }}
                     </x-nav-link>
-
-                    {{-- <x-dropdown-wrapper name="Branch">
-                        <x-dropdown-link :href="route('assets.index')">
-                            Daftar Branch
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('brands.index')">
-                            Daftar Merek
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper>
-
-                    <x-dropdown-wrapper name="Barang">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Daftar Barang
-                        </x-dropdown-link>
-                        <x-dropdown-link :href="route('units.index')">
-                            Daftar Unit
-                        </x-dropdown-link>
-                    </x-dropdown-wrapper> --}}
+                    <x-nav-link :href="route('admins.index')" :active="request()->routeIs('admins.index')">
+                        {{ __('Admin Kantor Cabang') }}
+                    </x-nav-link>
                 </div>
             </div>
 

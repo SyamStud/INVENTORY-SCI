@@ -29,8 +29,12 @@
                         {{ __('Peminjaman Aset') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('returns.index')" :active="request()->routeIs('returns.index')">
                         {{ __('Pengembalian Aset') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('permits.index')" :active="request()->routeIs('permits.index')">
+                        {{ __('Daftar Perizinan') }}
                     </x-nav-link>
                 </div>
             </div>

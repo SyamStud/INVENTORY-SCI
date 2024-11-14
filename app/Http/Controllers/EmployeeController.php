@@ -90,17 +90,28 @@ class EmployeeController extends Controller
             ]);
         }
 
-        $position = Position::create([
-            'name' => 'Kepala Cabang',
-            'branch_id' => Auth::user()->branch_id,
-        ]);
+        $headOffice = Employee::where('branch_id', Auth::user()->branch_id)->whereHas('position', function ($query) {
+            $query->where('name', 'Kepala Cabang');
+        })->first();
 
-        Employee::create([
-            'name' => $request->name,
-            'npp' => $request->npp,
-            'position_id' => $position->id,
-            'branch_id' => Auth::user()->branch_id,
-        ]);
+        if (!$headOffice) {
+            $position = Position::create([
+                'name' => 'Kepala Cabang',
+                'branch_id' => Auth::user()->branch_id,
+            ]);
+
+            Employee::create([
+                'name' => $request->name,
+                'npp' => $request->npp,
+                'position_id' => $position->id,
+                'branch_id' => Auth::user()->branch_id,
+            ]);
+        } else {
+            $headOffice->update([
+                'name' => $request->name,
+                'npp' => $request->npp,
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',

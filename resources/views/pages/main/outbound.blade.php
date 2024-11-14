@@ -67,13 +67,7 @@
 
                 <div class="mb-4 w-full md:w-52">
                     <x-input-label for="quantity" :value="__('Kuantitas')" />
-                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required
-                        autofocus />
-                </div>
-
-                <div class="mb-4 w-full md:w-96">
-                    <x-input-label for="price" :value="__('Harga Satuan')" />
-                    <x-text-input id="price" class="block mt-1 w-full" type="number" name="price" required
+                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required min="1"
                         autofocus />
                 </div>
 
@@ -135,11 +129,6 @@
                         <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
                         <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity"
                             required x-bind:value="item?.quantity" autofocus />
-                    </div>
-                    <div class="mb-4">
-                        <x-input-label for="edit_price" :value="__('Harga Satuan')" />
-                        <x-text-input id="edit_price" class="block mt-1 w-full" type="text" name="price"
-                            required x-bind:value="item?.price" autofocus />
                     </div>
 
                     <div class="w-full flex justify-end">
@@ -211,6 +200,31 @@
                     @csrf
 
                     <input id="in_number" type="hidden" name="outbound_number">
+
+                    <div class="mb-4 w-full">
+                        <x-input-label for="approved_by" :value="__('Disetujui Oleh')" />
+                        <select class="w-full select2" name="approved_by" x-data x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}">
+                                    {{ $employee->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-4 w-full">
+                        <x-input-label for="released_by" :value="__('Penanggung Jawab')" />
+                        <select class="w-full select2" name="released_by" x-data x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}">
+                                    {{ $employee->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="mb-4 w-full">
                         <x-input-label class="mb-2" for="photos" :value="__('Unggah Foto')" />
@@ -309,21 +323,6 @@
             });
         }
 
-        // setInterval(() => {
-        //     $.ajax({
-        //         url: '/fetch-date',
-        //         method: 'GET',
-        //         dataType: 'json',
-        //         success: function(response) {
-        //             $('#date').text(response.date);
-        //         },
-        //         error: function(xhr, status, error) {
-        //             console.error('Terjadi kesalahan:', error);
-        //         }
-        //     });
-        // }, 1000);
-
-
         function generateCode() {
             $.ajax({
                 url: '/outbounds/generate-code',
@@ -420,7 +419,7 @@
                         }
                     ],
                     columnDefs: [{
-                            targets: 0,
+                            targets: [0, 2, 3, 4],
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('text-center');
                             }
@@ -452,12 +451,7 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    if ($(window).width() < 768) {
-                        $('#outbound-action').css('display', 'block');
-                    } else {
-                        $('#outbound-action').css('display', 'flex');
-                    }
-                    $('.select2').select2();
+
 
                     if (response.status == 'error') {
                         Toast.fire({
@@ -465,6 +459,14 @@
                             title: response.message
                         });
                     } else {
+                        if ($(window).width() < 768) {
+                            $('#outbound-action').css('display', 'block');
+                        } else {
+                            $('#outbound-action').css('display', 'flex');
+                        }
+
+                        $('.select2').select2();
+
                         Toast.fire({
                             icon: 'success',
                             title: 'Barang berhasil ditambahkan'
@@ -513,15 +515,24 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    dataTable.ajax.reload();
+
+                    if (response.status == 'error') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    } else {
+                        dataTable.ajax.reload();
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Data barang berhasil diubah'
+                        });
+                    }
+
                     dispatchEvent(new CustomEvent('close-modal', {
                         detail: 'edit-item'
                     }));
-
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Data barang berhasil diubah'
-                    });
                 },
                 error: function(xhr) {
                     console.error(xhr);
@@ -598,6 +609,7 @@
                     $('#request_note_number').val('');
                     $('#delivery_note_number').val('');
                     $('#received_by').val('');
+                    $('#quantity').val('');
 
                     dispatchEvent(new CustomEvent('close-modal', {
                         detail: 'cancel-outbound'

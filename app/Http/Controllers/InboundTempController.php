@@ -53,7 +53,6 @@ class InboundTempController extends Controller
             'order_note_number' => 'required',
             'contract_note_number' => 'required',
             'delivery_note_number' => 'required',
-            'received_by' => 'required',
             'item_id' => 'required',
             'quantity' => 'required',
             'cost' => 'required',
@@ -78,7 +77,6 @@ class InboundTempController extends Controller
                 'contract_note_number' => $request->contract_note_number,
                 'delivery_note_number' => $request->delivery_note_number,
                 'date_received' => now(),
-                'received_by' => $request->received_by,
                 'total_cost' => 0,
                 'branch_id' => Auth::user()->branch_id,
                 'user_id' => Auth::id(),
@@ -94,7 +92,6 @@ class InboundTempController extends Controller
                 'order_note_number' => $request->order_note_number,
                 'contract_note_number' => $request->contract_note_number,
                 'delivery_note_number' => $request->delivery_note_number,
-                'received_by' => $request->received_by,
             ]);
         }
 
@@ -102,7 +99,6 @@ class InboundTempController extends Controller
 
         $isExist = InboundItemTemp::where('inbound_temp_id', $inbound->id)
             ->where('item_id', $request->item_id)
-            ->where('cost', $request->cost)
             ->where('branch_id', Auth::user()->branch_id)
             ->exists();
 
@@ -117,12 +113,12 @@ class InboundTempController extends Controller
             'item_id' => $request->item_id,
             'quantity' => $request->quantity,
             'cost' => $request->cost,
+            'total_cost' => $request->quantity * $request->cost,
             'branch_id' => Auth::user()->branch_id,
         ]);
 
-        $totalCost += $request->quantity * $request->cost;
-
-        $inbound->update(['total_cost' => $totalCost]);
+        $inbound->total_cost += ($request->quantity * $request->cost);
+        $inbound->save();
 
         return response()->json([
             'status' => 'success',
@@ -200,9 +196,24 @@ class InboundTempController extends Controller
 
     public function storeInbound(Request $request)
     {
-        $inboundTemp = InboundTemp::where('user_id', Auth::user()->id)
+        $inboundTemp = InboundTemp::with('items.item')->where('user_id', Auth::user()->id)
             ->where('branch_id', Auth::user()->branch_id)
             ->first();
+
+        $inboundTemp->items->each(function ($inboundItem) {
+            $item = Item::find($inboundItem->item_id);
+            $item->stock += $inboundItem->quantity;
+
+            if ($item->price == 0) {
+                $item->price = $inboundItem->cost;
+            } else if ($item->price != $inboundItem->cost) {
+                $item->price = ($item->price + $inboundItem->cost) / 2;
+            } else {
+                $item->price = $inboundItem->cost;
+            }
+
+            $item->save();
+        });
 
         $inbound = Inbound::create([
             'inbound_number' => $inboundTemp->inbound_number,
@@ -224,6 +235,7 @@ class InboundTempController extends Controller
                     'item_id' => $item->item_id,
                     'quantity' => $item->quantity,
                     'cost' => $item->cost,
+                    'total_cost' => $item->quantity * $item->cost,
                     'branch_id' => $item->branch_id,
                 ];
             })->toArray()
@@ -281,14 +293,13 @@ class InboundTempController extends Controller
             // Process items
             $values = [];
             foreach ($inbound->items as $index => $inboundItem) {
-                $total = $inboundItem->quantity * $inboundItem->cost;
 
                 $values[$index] = [
                     'no' => $index + 1,
                     'item_name' => $inboundItem->item->name,
                     'quantity' => $inboundItem->quantity,
                     'cost' => number_format($inboundItem->cost, 0, ',', '.'),
-                    'total' => number_format($total, 0, ',', '.')
+                    'total' => number_format($inboundItem->total_cost, 0, ',', '.')
                 ];
             }
 
