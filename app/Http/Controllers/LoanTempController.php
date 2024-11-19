@@ -388,7 +388,7 @@ class LoanTempController extends Controller
         }
     }
 
-    public function saveDocument($id)
+    public function saveDocument($id, $preview = false)
     {
         try {
             $loan = Loan::find($id);
@@ -404,6 +404,33 @@ class LoanTempController extends Controller
             $phpWord->setValue('npp_general', $loan->generalDivision->npp);
             $phpWord->setValue('loan_officer', $loan->loanOfficer->name);
             $phpWord->setValue('npp_officer', $loan->loanOfficer->npp);
+
+            if ($loan->signatures->count() >= 3) {
+                $signatures = [
+                    'operation_head' => $loan->signatures->where('position', 'KEPALA BIDANG OPERASI')->first()->signature_path,
+                    'general_division' => $loan->signatures->where('position', 'BAGIAN UMUM')->first()->signature_path,
+                    'loan_officer' => $loan->signatures->where('position', 'PETUGAS PINJAMAN')->first()->signature_path,
+                ];
+
+                $phpWord->setImageValue('sign_operation_head', [
+                    'path' => storage_path('app/public/' . $signatures['operation_head']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+                $phpWord->setImageValue('sign_general_division', [
+                    'path' => storage_path('app/public/' . $signatures['general_division']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+                $phpWord->setImageValue('sign_loan_officer', [
+                    'path' => storage_path('app/public/' . $signatures['loan_officer']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+            }
 
             $photos = json_decode($loan->photos, true);
 
@@ -457,17 +484,47 @@ class LoanTempController extends Controller
             $phpWord->cloneRowAndSetValues('no', $values);
 
             // Output ke browser
-            $tempDocx = storage_path('app/public/documents/loan/' . str_replace('/', '-', $loan->loan_number) . '.docx');
+            $tempDocx = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.docx');
             $phpWord->saveAs($tempDocx);
 
-            $docxPath = storage_path('app/public/documents/loan/' . str_replace('/', '-', $loan->loan_number) . '.docx');
-            $pdfPath = storage_path('app/public/documents/loan/' . str_replace('/', '-', $loan->loan_number) . '.pdf');
+            $docxPath = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.docx');
+            $pdfPath = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.pdf');
 
-            $pythonScriptPath = base_path('scripts/word2pdf.py');
+            if (file_exists($pdfPath)) {
+                $content = file_get_contents($pdfPath);
 
-            // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
-            $command = "python $pythonScriptPath $docxPath $pdfPath";
-            exec($command);
+                if ($preview) {
+                    return response($content, 200, [
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'inline; filename="' . $loan->loan_number . '.pdf"',
+                        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                        'Pragma' => 'no-cache',
+                        'Expires' => '0',
+                    ]);
+                } else {
+                    return [
+                        'status' => 'success',
+                        'message' => 'PDF berhasil dibuat',
+                        'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
+                    ];
+                }
+            }
+
+            // $pythonScriptPath = base_path('scripts/word2pdf.py');
+
+            // // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
+            // $command = "python $pythonScriptPath $docxPath $pdfPath";
+            // exec($command);
+
+            $libreOfficePath = "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
+            if (!file_exists($libreOfficePath)) {
+                $errorMessage = "LibreOffice not found at the expected location: " . $libreOfficePath;
+                error_log($errorMessage);
+                return response($errorMessage, 500);
+            }
+
+            $command = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe" --headless --convert-to pdf --outdir "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\loans') . '" "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\loans\\' . str_replace('/', '-', $loan->loan_number) . '.docx') . '"';
+            exec($command, $output, $returnCode);
 
             // Baca file PDF
             $content = file_get_contents($pdfPath);
@@ -475,13 +532,23 @@ class LoanTempController extends Controller
             // Cleanup temp files
             unlink($tempDocx);
 
-            $loan->update(['document_path' => 'documents/loan/' . str_replace('/', '-', $loan->loan_number) . '.pdf']);
+            $loan->update(['document_path' => 'documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.pdf']);
 
-            return [
-                'status' => 'success',
-                'message' => 'PDF berhasil dibuat',
-                'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
-            ];
+            if ($preview) {
+                return response($content, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . $loan->loan_number . '.pdf"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                ]);
+            } else {
+                return [
+                    'status' => 'success',
+                    'message' => 'PDF berhasil dibuat',
+                    'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
+                ];
+            }
         } catch (\Exception $e) {
             log::info($e->getMessage());
         }

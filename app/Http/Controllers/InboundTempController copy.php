@@ -50,7 +50,6 @@ class InboundTempController extends Controller
             'order_note_number' => 'required',
             'contract_note_number' => 'required',
             'delivery_note_number' => 'required',
-            'received_by' => 'required',
             'item_id' => 'required',
             'quantity' => 'required',
             'cost' => 'required',
@@ -75,7 +74,6 @@ class InboundTempController extends Controller
                 'contract_note_number' => $request->contract_note_number,
                 'delivery_note_number' => $request->delivery_note_number,
                 'date_received' => now(),
-                'received_by' => $request->received_by,
                 'total_cost' => 0,
                 'branch_id' => Auth::user()->branch_id,
                 'user_id' => Auth::id(),
@@ -91,7 +89,6 @@ class InboundTempController extends Controller
                 'order_note_number' => $request->order_note_number,
                 'contract_note_number' => $request->contract_note_number,
                 'delivery_note_number' => $request->delivery_note_number,
-                'received_by' => $request->received_by,
             ]);
         }
 

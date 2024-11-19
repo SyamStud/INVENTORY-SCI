@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar Peminjaman
+            Daftar pengembalian
         </h2>
     </x-slot>
 
@@ -17,7 +17,7 @@
                         <th>Kepala Bidang Operasi</th>
                         <th>Petugas Peminjaman</th>
                         <th>Fungsi Umum</th>
-                        <th>Tanggal Peminjaman</th>
+                        <th>Tanggal Pengembalian</th>
                         <th class="w-20">Detail Aset</th>
                         <th class="w-20">Status</th>
                         <th class="w-20">Dokumen</th>
@@ -46,7 +46,7 @@
                     responsive: true,
                     paging: false,
                     ajax: {
-                        url: '{{ route('loans.assets.data') }}',
+                        url: '{{ route('returns.assets.data') }}',
                         data: function(d) {
                             d.loan_id = loanId;
                         }
@@ -68,8 +68,8 @@
                             orderable: false,
                         },
                         {
-                            data: 'duration',
-                            name: 'duration',
+                            data: 'return_check',
+                            name: 'return_check',
                             orderable: false
                         },
                         {
@@ -82,14 +82,14 @@
             }
         }" @set-asset.window="setAsset($event.detail)"
             @hidden.window="this.dataTable.clear().draw();">
-            <h5 class="font-semibold text-md">Detail Peminjaman</h5>
+            <h5 class="font-semibold text-md">Detail pengembalian</h5>
             <table id="detail-loan" class="table table-striped nowrap" style="width:100%">
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
                         <th>Nama Asset</th>
                         <th>Jumlah</th>
-                        <th>Lama Peminjaman</th>
+                        <th>Kondisi Pengembalian</th>
                         <th>Catatan</th>
                     </tr>
                 </thead>
@@ -105,7 +105,7 @@
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('loans.data') }}",
+                    ajax: "{{ route('admin.returns.data') }}",
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',

@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar Peminjaman
+            Daftar pengeluaran Barang
         </h2>
     </x-slot>
 
@@ -12,12 +12,15 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nomor Peminjaman</th>
-                        <th>Nama Peminjam</th>
-                        <th>Kepala Bidang Operasi</th>
-                        <th>Petugas Peminjaman</th>
-                        <th>Fungsi Umum</th>
-                        <th>Tanggal Peminjaman</th>
+                        <th>Nomor Dokumen</th>
+                        <th>Tujuan</th>
+                        <th>Keperluan</th>
+                        <th>No/Tgl Surat Permintaan</th>
+                        <th>No/Tgl Surat Pengantar</th>
+                        <th>Pengesah</th>
+                        <th>Penganggung Jawab</th>
+                        <th>Penerima</th>
+                        <th class="w-20">Tanggal</th>
                         <th class="w-20">Detail Aset</th>
                         <th class="w-20">Status</th>
                         <th class="w-20">Dokumen</th>
@@ -27,28 +30,28 @@
         </div>
     </main>
 
-    <x-modal name="detail-loan" :show="false">
+    <x-modal name="detail-outbound" :show="false">
         <div class="p-5" x-data="{
-            asset: null,
+            item: null,
             dataTable: null,
-            setAsset(data) {
-                this.asset = data;
+            setItem(data) {
+                this.item = data;
                 this.initializeDataTable(data.id);
             },
-            initializeDataTable(loanId) {
+            initializeDataTable(outboundId) {
                 if (this.dataTable) {
                     this.dataTable.destroy();
                 }
         
-                this.dataTable = $('#detail-loan').DataTable({
+                this.dataTable = $('#detail-outbound').DataTable({
                     processing: true,
                     serverSide: true,
                     responsive: true,
                     paging: false,
                     ajax: {
-                        url: '{{ route('loans.assets.data') }}',
+                        url: '{{ route('outbounds.items.data') }}',
                         data: function(d) {
-                            d.loan_id = loanId;
+                            d.outbound_id = outboundId;
                         }
                     },
                     columns: [{
@@ -58,8 +61,8 @@
                             searchable: false
                         },
                         {
-                            data: 'nama_asset',
-                            name: 'nama_asset',
+                            data: 'name',
+                            name: 'name',
                             orderable: false
                         },
                         {
@@ -68,29 +71,29 @@
                             orderable: false,
                         },
                         {
-                            data: 'duration',
-                            name: 'duration',
-                            orderable: false
+                            data: 'price',
+                            name: 'price',
+                            orderable: false,
                         },
                         {
-                            data: 'notes',
-                            name: 'notes',
-                            orderable: false
-                        }
+                            data: 'total_price',
+                            name: 'total_price',
+                            orderable: false,
+                        },
                     ],
                 });
             }
-        }" @set-asset.window="setAsset($event.detail)"
+        }" @set-item.window="setItem($event.detail)"
             @hidden.window="this.dataTable.clear().draw();">
-            <h5 class="font-semibold text-md">Detail Peminjaman</h5>
-            <table id="detail-loan" class="table table-striped nowrap" style="width:100%">
+            <h5 class="font-semibold text-md">Detail pengeluaran Barang</h5>
+            <table id="detail-outbound" class="table table-striped nowrap" style="width:100%">
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nama Asset</th>
+                        <th>Nama Barang</th>
                         <th>Jumlah</th>
-                        <th>Lama Peminjaman</th>
-                        <th>Catatan</th>
+                        <th>Harga</th>
+                        <th>Total Harga</th>
                     </tr>
                 </thead>
             </table>
@@ -105,7 +108,7 @@
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('loans.data') }}",
+                    ajax: "{{ route('outbounds.data') }}",
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -113,28 +116,43 @@
                             searchable: false
                         },
                         {
-                            data: 'loan_number',
-                            name: 'loan_number',
+                            data: 'outbound_number',
+                            name: 'outbound_number',
                             orderable: false
                         },
                         {
-                            data: 'customer_name',
-                            name: 'customer_name',
+                            data: 'release_to',
+                            name: 'release_to',
                             orderable: false
                         },
                         {
-                            data: 'operation_head',
-                            name: 'operation_head',
+                            data: 'release_reason',
+                            name: 'release_reason',
                             orderable: false
                         },
                         {
-                            data: 'loan_officer',
-                            name: 'loan_officer',
+                            data: 'request_note_number',
+                            name: 'request_note_number',
                             orderable: false
                         },
                         {
-                            data: 'general_division',
-                            name: 'general_division',
+                            data: 'delivery_note_number',
+                            name: 'delivery_note_number',
+                            orderable: false
+                        },
+                        {
+                            data: 'approved_by',
+                            name: 'approved_by',
+                            orderable: false
+                        },
+                        {
+                            data: 'released_by',
+                            name: 'released_by',
+                            orderable: false
+                        },
+                        {
+                            data: 'received_by',
+                            name: 'received_by',
                             orderable: false
                         },
                         {

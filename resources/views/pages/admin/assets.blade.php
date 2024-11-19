@@ -7,12 +7,19 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
-            x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-asset')">
-            <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
-                alt="">
-            Tambah Aset
-        </button>
+        <div class="flex gap-2">
+            <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+                x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-asset')">
+                <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
+                    alt="">
+                Tambah Aset
+            </button>
+
+            <a href="{{ route('assets.other') }}" class="flex items-center gap-1 px-4 py-2 bg-[#31363F] rounded-md text-white font-medium text-sm">
+                <img class="w-6" src="https://img.icons8.com/?size=100&id=9k0o3TIEUkNT&format=png&color=FFFFFF" alt="">
+                Aset Cabang Lain
+            </a>
+        </div>
 
         <x-modal name="add-asset" :show="false">
             <div class="p-5">
@@ -159,16 +166,16 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="permit" :value="__('Unggah Dokumen Perizinan')" />
-                        <label for="permit" id="permitLabel"
+                        <x-input-label for="procurement" :value="__('Unggah Dokumen Pengadaan')" />
+                        <label for="procurement" id="procurementLabel"
                             class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
                             <img class="w-5"
                                 src="https://img.icons8.com/?size=100&id=pEujrB5ongzP&format=png&color=000000"
                                 alt="">
                             <span id="text-document">Pilih Dokumen</span>
                         </label>
-                        <input type="file" id="permit" name="permit" accept=".pdf" class="hidden"
-                            onchange="showFileName(event, 'permitLabel')" />
+                        <input type="file" id="procurement" name="procurement" accept=".pdf" class="hidden"
+                            onchange="showFileName(event, 'procurementLabel')" />
                     </div>
 
                     <div class="mb-4">
@@ -218,7 +225,7 @@
                         <th>Faktor Koreksi</th>
                         <th>Signifikasi</th>
                         <th>Kalibrasi</th>
-                        <th>Perizinan</th>
+                        <th>Pengadaan</th>
                         <th>Foto</th>
                         <th>Aksi</th>
                     </tr>
@@ -374,6 +381,10 @@
                             name: 'name'
                         },
                         {
+                            data: 'brand',
+                            name: 'brand'
+                        },
+                        {
                             data: 'serial_number',
                             name: 'serial_number',
                             orderable: false
@@ -436,8 +447,8 @@
                             orderable: false
                         },
                         {
-                            data: 'permit',
-                            name: 'permit',
+                            data: 'procurement',
+                            name: 'procurement',
                             orderable: false
                         },
                         {
@@ -453,12 +464,11 @@
                         }
                     ],
                     columnDefs: [{
-                            targets: 0,
-                            createdCell: function(td, cellData, rowData, row, col) {
-                                $(td).addClass('text-center');
-                            }
-                        },
-                    ]
+                        targets: 0,
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).addClass('text-center');
+                        }
+                    }, ]
                 }).columns.adjust()
                 .responsive.recalc();
         });

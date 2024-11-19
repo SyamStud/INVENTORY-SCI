@@ -30,5 +30,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'manage-items']);
         Permission::create(['name' => 'manage-employees']);
         Permission::create(['name' => 'manage-assets']);
+        Permission::create(['name' => 'sign-documents']);
+        Permission::create(['name' => 'manage-inventories']);
     }
 }

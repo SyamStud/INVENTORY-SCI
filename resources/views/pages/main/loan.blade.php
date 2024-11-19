@@ -47,7 +47,7 @@
                     })">
                         @foreach ($assets as $asset)
                             <option value="{{ $asset->id }}">
-                                {{ $asset->name }}
+                                {{ $asset->name . " || " . $asset->serial_number }}
                             </option>
                         @endforeach
                     </select>

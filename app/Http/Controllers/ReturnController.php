@@ -4,78 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Loan;
 use App\Models\LoanAsset;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpWord\TemplateProcessor;
 use Yajra\DataTables\Facades\DataTables;
 
-class LoanController extends Controller
+class ReturnController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $brands = Loan::where('branch_id', Auth::user()->branch_id)->get();
+        $brands = Loan::where('branch_id', Auth::user()->branch_id)
+            ->where('status', 'returned')
+            ->get();
 
-        return view('pages.admin.loans', [
+        return view('pages.admin.returns', [
             'brands' => $brands
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Loan $loan)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Loan $loan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Loan $loan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Loan $loan)
-    {
-        //
-    }
-
-    // Controller Method
-    public function getLoan()
+    public function getReturn()
     {
         $loans = Loan::where('branch_id', Auth::user()->branch_id)
-            ->where('status', '!=', 'returned')
+            ->where('status', 'returned')
             ->with('assets.asset')->orderByDesc('created_at');
 
         return DataTables::of($loans)
@@ -177,7 +128,7 @@ class LoanController extends Controller
                         $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
                     } else {
                         // Jika semua posisi sudah tanda tangan
-                        $statusHtml .= "<a href='/documents/loans/download/{$loans->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                        $statusHtml .= "<a href='/documents/returns/download/{$loans->id}/true/" . str_replace('/', '-', $loans->loan_number) . "' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                                             <img class='w-5' src='https://img.icons8.com/?size=100&id=9ZFMqzgXThYz&format=png&color=FFFFFF' alt=''>
                                             Lihat Dokumen
                                         </a>";
@@ -188,7 +139,7 @@ class LoanController extends Controller
                     return $statusHtml;
                 }
 
-                return "<a href='/documents/loans/download/{$loans->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                return "<a href='/documents/returns/download/{$loans->id}/true/" . str_replace('/', '-', $loans->loan_number) . "' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                     <img class='w-5' src='https://img.icons8.com/?size=100&id=VNxIqSP5pHwD&format=png&color=FFFFFF' alt=''>
                     Lihat Dokumen
                 </a>";
@@ -215,7 +166,7 @@ class LoanController extends Controller
             ->make(true);
     }
 
-    public function getLoanAssets(Request $request)
+    public function getReturnAssets(Request $request)
     {
         $loanAssets = LoanAsset::where('loan_id', $request->loan_id)
             ->with('asset')

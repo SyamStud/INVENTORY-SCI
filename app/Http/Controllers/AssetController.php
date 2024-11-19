@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Asset;
 use App\Models\Brand;
-use Barryvdh\Debugbar\Facades\Debugbar;
+use App\Models\BranchOffice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -50,7 +52,7 @@ class AssetController extends Controller
             'correction_factor' => 'required',
             'significance' => 'required|in:ya,tidak',
             'calibration.*' => 'required|mimes:pdf',
-            'permit' => 'required',
+            'procurement' => 'required',
             'photo' => 'required',
         ]);
 
@@ -89,11 +91,11 @@ class AssetController extends Controller
 
         $calibrationFiles = [];
 
-        $permit = $request->file('permit');
-        $permitName = time() . '.' . $permit->extension();
+        $procurement = $request->file('procurement');
+        $procurementName = time() . '.' . $procurement->extension();
 
-        $permitPath = $permit->storeAs('assets/permits', $permitName, 'public');
-        $asset->permit = 'assets/permits/' . $permitName;
+        $procurementPath = $procurement->storeAs('assets/procurements', $procurementName, 'public');
+        $asset->procurement = 'assets/procurements/' . $procurementName;
 
         $calibrationFiles = [];
 
@@ -154,8 +156,8 @@ class AssetController extends Controller
             $photo = $request->file('photo');
             $photoName = time() . '.' . $photo->extension();
 
-            $photoPath = $photo->storeAs('assets', $photoName, 'public');
-            $asset->photo = 'assets/' . $photoName;
+            $photoPath = $photo->storeAs('assets/photos', $photoName, 'public');
+            $asset->photo = 'assets/photos' . $photoName;
         }
 
         if ($request->hasFile('calibration')) {
@@ -164,8 +166,18 @@ class AssetController extends Controller
             $file = $request->file('calibration');
             $fileName = time() . '.' . $file->extension();
 
-            $filePath = $file->storeAs('assets', $fileName, 'public');
-            $asset->calibration = 'assets/' . $fileName;
+            $filePath = $file->storeAs('assets/calibrations', $fileName, 'public');
+            $asset->calibration = 'assets/calibrations' . $fileName;
+        }
+
+        if ($request->hasFile('procurement')) {
+            Storage::disk('public')->delete($asset->procurement);
+
+            $file = $request->file('procurement');
+            $fileName = time() . '.' . $file->extension();
+
+            $filePath = $file->storeAs('assets/procurements', $fileName, 'public');
+            $asset->procurement = 'assets/procurements' . $fileName;
         }
 
         $asset->save();
@@ -183,6 +195,7 @@ class AssetController extends Controller
     {
         Storage::disk('public')->delete($asset->photo);
         Storage::disk('public')->delete($asset->calibration);
+        Storage::disk('public')->delete($asset->procurement);
 
         $asset->delete();
 
@@ -218,10 +231,10 @@ class AssetController extends Controller
                 $buttons .= "</div>";
                 return $buttons;
             })
-            ->addColumn('permit', function ($asset) {
+            ->addColumn('procurement', function ($asset) {
                 return "
                 <div class=''>
-                    <a style='background-color: #133E87;' class='flex w-max items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' href='" . asset('storage/' . $asset->permit) . "' target='_blank'>
+                    <a style='background-color: #133E87;' class='flex w-max items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' href='" . asset('storage/' . $asset->procurement) . "' target='_blank'>
                         <img class='w-5' src='https://img.icons8.com/?size=100&id=CoWjc6xXzIS8&format=png&color=FFFFFF' alt=''>
                         Lihat
                     </a>
@@ -263,7 +276,75 @@ class AssetController extends Controller
                 </div>
             ";
             })
-            ->rawColumns(['calibration', 'photo', 'action', 'permit'])
+            ->rawColumns(['calibration', 'photo', 'action', 'procurement'])
+            ->make(true);
+    }
+
+
+    public function otherBranch()
+    {
+        $branches = BranchOffice::all();
+
+        return view('pages.admin.assets-other', [
+            'branches' => $branches
+        ]);
+    }
+
+    public function getAssetsOtherBranch(Request $request)
+    {
+        Carbon::setLocale('id');
+
+        $branch = $request->query('branch_id');
+
+        $assets = Asset::query();
+
+        if ($branch) {
+            $assets->where('branch_id', $branch);
+        }
+
+        $assets = $assets->get();
+
+        return DataTables::of($assets)
+            ->addIndexColumn()
+            ->addColumn('brand', function ($asset) {
+                return $asset->brand->name;
+            })
+            ->addColumn('calibration', function ($asset) {
+                $calibrationFiles = json_decode($asset->calibration, true);
+                $buttons = "<div class='flex gap-2'>";
+
+                foreach ($calibrationFiles as $file) {
+                    $buttons .= "
+                    <div class='flex items-center gap-2'>
+                        <a style='background-color: #133E87;' class='flex w-max items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' href='" . asset('storage/' . $file['path']) . "' target='_blank'>
+                            <img class='w-5' src='https://img.icons8.com/?size=100&id=CoWjc6xXzIS8&format=png&color=FFFFFF' alt=''>
+                            " . $file['name'] . "
+                        </a>
+                    </div>";
+                }
+
+                $buttons .= "</div>";
+                return $buttons;
+            })
+            ->addColumn('procurement', function ($asset) {
+                return "
+                <div class=''>
+                    <a style='background-color: #133E87;' class='flex w-max items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' href='" . asset('storage/' . $asset->procurement) . "' target='_blank'>
+                        <img class='w-5' src='https://img.icons8.com/?size=100&id=CoWjc6xXzIS8&format=png&color=FFFFFF' alt=''>
+                        Lihat
+                    </a>
+                </div>";
+            })
+            ->addColumn('photo', function ($asset) {
+                return "
+                <div class=''>
+                    <a style='background-color: #133E87;' class='flex w-max items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' href='" . asset('storage/' . $asset->photo) . "' target='_blank'>
+                        <img class='w-5' src='https://img.icons8.com/?size=100&id=VNxIqSP5pHwD&format=png&color=FFFFFF' alt=''>
+                        Lihat
+                    </a>
+                </div>";
+            })
+            ->rawColumns(['calibration', 'photo', 'procurement'])
             ->make(true);
     }
 }

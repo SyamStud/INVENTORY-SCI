@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('received_by')->nullable();
             $table->double('total_price');
             $table->string('photo')->nullable();
+            $table->string('document_path')->nullable();
             $table->enum('status', ['pending', 'approved'])->default('pending');
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->foreignId('user_id')->constrained();

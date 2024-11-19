@@ -215,7 +215,7 @@
             </div>
         </x-modal>
 
-        <x-modal name="receipt-letter" :show="false">
+        {{-- <x-modal name="receipt-letter" :show="false">
             <div class="p-5">
                 <h5 class="font-semibold text-md">Konfirmasi Cetak Bukti Penerimaan</h5>
 
@@ -238,7 +238,7 @@
                     </div>
                 </form>
             </div>
-        </x-modal>
+        </x-modal> --}}
     </main>
 
     <script>
@@ -579,18 +579,18 @@
                         title: response.message
                     });
 
-                    // Open receipt-letter modal
-                    dispatchEvent(new CustomEvent('open-modal', {
-                        detail: 'receipt-letter'
-                    }));
+                    // // Open receipt-letter modal
+                    // dispatchEvent(new CustomEvent('open-modal', {
+                    //     detail: 'receipt-letter'
+                    // }));
 
-                    const receiptForm = $('#receiptForm');
+                    // const receiptForm = $('#receiptForm');
 
-                    receiptForm.off('submit').on('submit', function(e) {
-                        e.preventDefault();
-                        console.log(response.inbound_id);
-                        window.location.href = `/inbounds/receipt/${response.inbound_id}`;
-                    });
+                    // receiptForm.off('submit').on('submit', function(e) {
+                    //     e.preventDefault();
+                    //     console.log(response.inbound_id);
+                    //     window.location.href = `/inbounds/receipt/${response.inbound_id}`;
+                    // });
                 },
                 error: function(xhr) {
                     console.error(xhr);

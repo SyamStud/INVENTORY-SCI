@@ -67,8 +67,8 @@
 
                 <div class="mb-4 w-full md:w-52">
                     <x-input-label for="quantity" :value="__('Kuantitas')" />
-                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required min="1"
-                        autofocus />
+                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required
+                        min="1" autofocus />
                 </div>
 
                 <div class="md:flex gap-2 md:w-max">
@@ -668,18 +668,20 @@
                         title: response.message
                     });
 
-                    // Open receipt-letter modal
-                    dispatchEvent(new CustomEvent('open-modal', {
-                        detail: 'receipt-letter'
-                    }));
+                    window.location.href = `/outbounds/sign/${response.outbound_id}`;
 
-                    const receiptForm = $('#receiptForm');
+                    // // Open receipt-letter modal
+                    // dispatchEvent(new CustomEvent('open-modal', {
+                    //     detail: 'receipt-letter'
+                    // }));
 
-                    receiptForm.off('submit').on('submit', function(e) {
-                        e.preventDefault();
-                        console.log(response.outbound_id);
-                        window.location.href = `/outbounds/receipt/${response.outbound_id}`;
-                    });
+                    // const receiptForm = $('#receiptForm');
+
+                    // receiptForm.off('submit').on('submit', function(e) {
+                    //     e.preventDefault();
+                    //     console.log(response.outbound_id);
+                    //     window.location.href = `/outbounds/sign/${response.outbound_id}`;
+                    // });
                 },
                 error: function(xhr) {
                     console.error(xhr);

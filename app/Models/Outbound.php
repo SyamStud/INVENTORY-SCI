@@ -18,6 +18,7 @@ class Outbound extends Model
         'received_by',
         'total_price',
         'photo',
+        'document_path',
         'status',
         'branch_id',
         'user_id',
@@ -46,5 +47,10 @@ class Outbound extends Model
     public function items()
     {
         return $this->hasMany(OutboundItem::class);
+    }
+
+    public function signatures()
+    {
+        return $this->morphMany(Signature::class, 'signable');
     }
 }

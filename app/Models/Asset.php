@@ -27,7 +27,8 @@ class Asset extends Model
         'range',
         'correction_factor',
         'significance',
-        'size'
+        'size',
+        'procurement'
     ];
 
     public function branchOffice()

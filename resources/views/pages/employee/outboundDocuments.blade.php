@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Persetujuan Dokumen Peminjaman Aset
+            Persetujuan Dokumen Pengeluaran Barang
         </h2>
     </x-slot>
 
@@ -13,7 +13,8 @@
                     <tr class="text-white">
                         <th class="w-10">No</th>
                         <th>Nomor Dokumen</th>
-                        <th>Nama Pelanggan</th>
+                        <th>Tujuan</th>
+                        <th>Keperluan</th>
                         <th class="w-20">Aksi</th>
                     </tr>
                 </thead>
@@ -29,7 +30,7 @@
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('documents.loans.pending') }}",
+                    ajax: "{{ route('documents.outbounds.pending') }}",
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -37,12 +38,16 @@
                             searchable: false
                         },
                         {
-                            data: 'loan_number',
-                            name: 'loan_number'
+                            data: 'outbound_number',
+                            name: 'outbound_number'
                         },
                         {
-                            data: 'customer_name',
-                            name: 'customer_name'
+                            data: 'release_to',
+                            name: 'release_to'
+                        },
+                        {
+                            data: 'release_reason',
+                            name: 'release_reason'
                         },
                         {
                             data: 'action',
@@ -58,7 +63,7 @@
                             }
                         },
                         {
-                            targets: 3,
+                            targets: 4,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center gap-2 w-max');
                             }

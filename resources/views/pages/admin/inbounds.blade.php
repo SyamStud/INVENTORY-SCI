@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar Peminjaman
+            Daftar pemasukan Barang
         </h2>
     </x-slot>
 
@@ -12,43 +12,43 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nomor Peminjaman</th>
-                        <th>Nama Peminjam</th>
-                        <th>Kepala Bidang Operasi</th>
-                        <th>Petugas Peminjaman</th>
-                        <th>Fungsi Umum</th>
-                        <th>Tanggal Peminjaman</th>
+                        <th>Nomor Dokumen</th>
+                        <th>Diterima Dari</th>
+                        <th>No/Tgl Surat Pesanan</th>
+                        <th>No/Tgl Surat Kontrak</th>
+                        <th>No/Tgl Surat Pengantar</th>
+                        <th>Penyerah</th>
+                        <th class="w-20">Tanggal</th>
                         <th class="w-20">Detail Aset</th>
                         <th class="w-20">Status</th>
-                        <th class="w-20">Dokumen</th>
                     </tr>
                 </thead>
             </table>
         </div>
     </main>
 
-    <x-modal name="detail-loan" :show="false">
+    <x-modal name="detail-inbound" :show="false">
         <div class="p-5" x-data="{
-            asset: null,
+            item: null,
             dataTable: null,
-            setAsset(data) {
-                this.asset = data;
+            setItem(data) {
+                this.item = data;
                 this.initializeDataTable(data.id);
             },
-            initializeDataTable(loanId) {
+            initializeDataTable(inboundId) {
                 if (this.dataTable) {
                     this.dataTable.destroy();
                 }
         
-                this.dataTable = $('#detail-loan').DataTable({
+                this.dataTable = $('#detail-inbound').DataTable({
                     processing: true,
                     serverSide: true,
                     responsive: true,
                     paging: false,
                     ajax: {
-                        url: '{{ route('loans.assets.data') }}',
+                        url: '{{ route('inbounds.items.data') }}',
                         data: function(d) {
-                            d.loan_id = loanId;
+                            d.inbound_id = inboundId;
                         }
                     },
                     columns: [{
@@ -58,8 +58,8 @@
                             searchable: false
                         },
                         {
-                            data: 'nama_asset',
-                            name: 'nama_asset',
+                            data: 'name',
+                            name: 'name',
                             orderable: false
                         },
                         {
@@ -68,29 +68,29 @@
                             orderable: false,
                         },
                         {
-                            data: 'duration',
-                            name: 'duration',
-                            orderable: false
+                            data: 'cost',
+                            name: 'cost',
+                            orderable: false,
                         },
                         {
-                            data: 'notes',
-                            name: 'notes',
-                            orderable: false
-                        }
+                            data: 'total_cost',
+                            name: 'total_cost',
+                            orderable: false,
+                        },
                     ],
                 });
             }
-        }" @set-asset.window="setAsset($event.detail)"
+        }" @set-item.window="setItem($event.detail)"
             @hidden.window="this.dataTable.clear().draw();">
-            <h5 class="font-semibold text-md">Detail Peminjaman</h5>
-            <table id="detail-loan" class="table table-striped nowrap" style="width:100%">
+            <h5 class="font-semibold text-md">Detail pemasukan Barang</h5>
+            <table id="detail-inbound" class="table table-striped nowrap" style="width:100%">
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nama Asset</th>
+                        <th>Nama Barang</th>
                         <th>Jumlah</th>
-                        <th>Lama Peminjaman</th>
-                        <th>Catatan</th>
+                        <th>Harga</th>
+                        <th>Total Harga</th>
                     </tr>
                 </thead>
             </table>
@@ -105,7 +105,7 @@
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('loans.data') }}",
+                    ajax: "{{ route('inbounds.data') }}",
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -113,28 +113,33 @@
                             searchable: false
                         },
                         {
-                            data: 'loan_number',
-                            name: 'loan_number',
+                            data: 'inbound_number',
+                            name: 'inbound_number',
                             orderable: false
                         },
                         {
-                            data: 'customer_name',
-                            name: 'customer_name',
+                            data: 'received_from',
+                            name: 'received_from',
                             orderable: false
                         },
                         {
-                            data: 'operation_head',
-                            name: 'operation_head',
+                            data: 'order_note_number',
+                            name: 'order_note_number',
                             orderable: false
                         },
                         {
-                            data: 'loan_officer',
-                            name: 'loan_officer',
+                            data: 'contract_note_number',
+                            name: 'contract_note_number',
                             orderable: false
                         },
                         {
-                            data: 'general_division',
-                            name: 'general_division',
+                            data: 'delivery_note_number',
+                            name: 'delivery_note_number',
+                            orderable: false
+                        },
+                        {
+                            data: 'received_from',
+                            name: 'received_from',
                             orderable: false
                         },
                         {
@@ -154,12 +159,6 @@
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'document',
-                            name: 'document',
-                            orderable: false,
-                            searchable: false
-                        }
                     ],
                     columnDefs: [{
                             targets: [0, 6],
@@ -168,7 +167,7 @@
                             }
                         },
                         {
-                            targets: 7,
+                            targets: 8,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center w-30');
                             }

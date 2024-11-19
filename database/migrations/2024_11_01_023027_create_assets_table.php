@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('size');
             $table->enum('condition', ['baik', 'rusak']);
             $table->enum('status', ['terpakai', 'tidak terpakai']);
-            $table->string('permit');
+            $table->string('procurement');
             $table->json('calibration');
             $table->string('calibration_number');
             $table->integer('calibration_interval');

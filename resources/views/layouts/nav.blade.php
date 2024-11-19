@@ -36,6 +36,10 @@
                     <x-nav-link :href="route('permits.index')" :active="request()->routeIs('permits.index')">
                         {{ __('Daftar Perizinan') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('procurements.index')" :active="request()->routeIs('procurements.index')">
+                        {{ __('Monitoring Pengadaan') }}
+                    </x-nav-link>
                 </div>
             </div>
 

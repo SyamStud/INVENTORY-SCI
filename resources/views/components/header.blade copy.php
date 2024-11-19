@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.tailwindcss.css" />
     <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
-
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -222,28 +220,6 @@
         table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
             background-color: #31363F !important;
         }
-
-        .dt-button.buttons-collection.buttons-colvis {
-            margin-right: 15px !important;
-            background-color: #31363F !important;
-            border-radius: 0.375rem !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            border: 1px solid transparent !important;
-            padding: 0.5rem 1rem !important;
-            box-sizing: border-box !important;
-            background: none;
-            transition: background-color 0.2s ease, color 0.2s ease !important;
-        }
-
-        .dt-button.buttons-collection.buttons-colvis:hover {
-            background-color: #31363F !important;
-            color: #ffffff !important;
-            border: 1px solid transparent !important;
-            transform: none !important;
-            outline: none !important;
-        }
-
 
         .dtr-data {
             /* display: flex; */
