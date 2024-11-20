@@ -7,7 +7,7 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+        <button class="flex w-full justify-center md:w-max md:justify-normal items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-unit')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
@@ -285,7 +285,7 @@
                     });
                 },
                 error: function(xhr) {
-                    alert('Terjadi kesalahan saat menghapus data');
+                    console.error(xhr);
                 },
                 complete: function() {
                     setTimeout(() => {

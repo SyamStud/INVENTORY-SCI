@@ -40,8 +40,8 @@
                     </div>
 
                     <div class="mb-4 w-full">
-                        <x-input-label for="admin_id" :value="__('Kantor Cabang')" />
-                        <select class="w-full select2" name="admin_id" x-data x-init="$nextTick(() => {
+                        <x-input-label for="branch_id" :value="__('Kantor Cabang')" />
+                        <select class="w-full select2" name="branch_id" x-data x-init="$nextTick(() => {
                             $('.select2').select2(); // Inisialisasi Select2
                         })">
                             @foreach ($branches as $branch)

@@ -276,6 +276,47 @@
             opacity: 0;
             transform: translate(0, 1rem) scale(0.95);
         }
+
+        /* Membuat wrapper tabel dapat menggulir horizontal, tetapi tidak untuk filter, pencarian, dan pagination */
+        #exam_wrapper {
+            width: 100%;
+            overflow: hidden;
+            /* Menghindari scroll di wrapper */
+        }
+
+        /* Hanya tabel yang dapat di-scroll horizontal */
+        #exam {
+            width: 100%;
+            overflow-x: auto;
+            /* Scroll horizontal hanya untuk tabel */
+            display: block;
+            /* Pastikan tabel bisa memiliki scroll horizontal */
+            table-layout: fixed;
+            /* Menghindari kolom meluber */
+        }
+
+        /* Mengatur posisi filter dan pagination agar tetap di tempat */
+        .dataTables_filter,
+        .dataTables_length,
+        .dataTables_paginate {
+            position: relative;
+            z-index: 10;
+            /* Agar tetap di atas tabel */
+        }
+
+        /* Pastikan elemen-elemen kontrol tidak tergulung */
+        /* #exam_wrapper .dataTables_filter,
+        #exam_wrapper .dataTables_length,
+        #exam_wrapper .dataTables_paginate {
+            position: sticky;
+            top: 0;
+            z-index: 0;
+        } */
+
+        /* Menambahkan padding atau margin pada tabel untuk memberi ruang pada elemen kontrol */
+        #exam {
+            margin-top: 20px;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>

@@ -2,15 +2,13 @@
     <x-slot name="nav">main</x-slot>
 
     <x-slot name="header">
-        <div class="w-full flex justify-center md:justify-start">
+        <div id="header" class="w-full flex justify-center md:justify-start">
             <h2 id="code" class="font-semibold text-xl text-gray-800 leading-tight">
             </h2>
-            {{-- <h2 id="date" class="font-semibold text-xl text-gray-800 leading-tight">
-            </h2> --}}
         </div>
     </x-slot>
 
-    <main class="px-10 mt-10">
+    <main id="content" class="px-10 mt-10">
         <form onsubmit="handleAddItem(event)">
             @csrf
 
@@ -127,7 +125,7 @@
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
-                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity"
+                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity" min="1"
                             required x-bind:value="item?.quantity" autofocus />
                     </div>
 

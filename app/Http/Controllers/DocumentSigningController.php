@@ -161,7 +161,7 @@ class DocumentSigningController extends Controller
 
             // Cek setiap posisi yang perlu tanda tangan
             foreach ($positionMapping as $field => $position) {
-                if ($document->$field == Auth::user()->employee_id) {
+                // if ($document->$field == Auth::user()->employee_id) {
                     $hasSignature = $document->signatures()
                         ->where('position', $position)
                         ->exists();
@@ -169,7 +169,7 @@ class DocumentSigningController extends Controller
                     if (!$hasSignature) {
                         $missingSignatures[] = $position;
                     }
-                }
+                // }
             }
 
             if ($document->status == 'pending') {

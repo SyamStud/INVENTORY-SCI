@@ -15,8 +15,10 @@
                 Tambah Aset
             </button>
 
-            <a href="{{ route('assets.other') }}" class="flex items-center gap-1 px-4 py-2 bg-[#31363F] rounded-md text-white font-medium text-sm">
-                <img class="w-6" src="https://img.icons8.com/?size=100&id=9k0o3TIEUkNT&format=png&color=FFFFFF" alt="">
+            <a href="{{ route('assets.other') }}"
+                class="flex items-center gap-1 px-4 py-2 bg-[#31363F] rounded-md text-white font-medium text-sm">
+                <img class="w-6" src="https://img.icons8.com/?size=100&id=9k0o3TIEUkNT&format=png&color=FFFFFF"
+                    alt="">
                 Aset Cabang Lain
             </a>
         </div>
@@ -287,31 +289,43 @@
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="calibration" :value="__('Unggah Dokumen Kalibrasi')" />
-                    <label for="calibration"
+                    <x-input-label for="edit_calibration" :value="__('Unggah Dokumen Kalibrasi')" />
+                    <label for="edit_calibration"
                         class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
                         <img class="w-5"
                             src="https://img.icons8.com/?size=100&id=pEujrB5ongzP&format=png&color=000000"
                             alt="">
                         Pilih Dokumen
                     </label>
-                    <input type="file" id="calibration" name="calibration[]" accept=".pdf" multiple
-                        class="hidden" onchange="showMultipleFiles(event, 'calibrationFilename')" />
-                    <div id="calibrationFilename" class="mt-2 text-sm text-gray-600"></div>
+                    <input type="file" id="edit_calibration" name="calibration[]" accept=".pdf" multiple
+                        class="hidden" onchange="showMultipleFiles(event, 'edit_calibrationFilename')" />
+                    <div id="edit_calibrationFilename" class="mt-2 text-sm text-gray-600"></div>
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="photo" :value="__('Unggah Foto')" />
-                    <label for="photo"
+                    <x-input-label for="edit_procurement" :value="__('Unggah Dokumen Pengadaan')" />
+                    <label for="edit_procurement" id="edit_procurementLabel"
+                        class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
+                        <img class="w-5"
+                            src="https://img.icons8.com/?size=100&id=pEujrB5ongzP&format=png&color=000000"
+                            alt="">
+                        <span id="text-document">Pilih Dokumen</span>
+                    </label>
+                    <input type="file" id="edit_procurement" name="procurement" accept=".pdf" class="hidden"
+                        onchange="showFileName(event, 'edit_procurementLabel')" />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_photo" :value="__('Unggah Foto')" />
+                    <label for="edit_photo" id="edit_photoLabel"
                         class="flex justify-center items-center gap-2 mt-1 w-full border border-gray-300 rounded-md p-2 text-center cursor-pointer shadow-sm">
                         <img class="w-6"
                             src="https://img.icons8.com/?size=100&id=ubpIBvM5kGB0&format=png&color=000000"
                             alt="">
-                        Pilih Foto
+                        <span id="text-photo">Pilih Foto</span>
                     </label>
-                    <input type="file" id="photo" name="photo" accept="image/*" class="hidden"
-                        onchange="showFileName(event, 'photoFilename')" />
-                    <p id="photoFilename" class="mt-2 text-sm text-gray-600"></p>
+                    <input type="file" id="edit_photo" name="photo" accept="image/*" class="hidden"
+                        onchange="showFileName(event, 'edit_photoLabel')" />
                 </div>
 
                 <div class="w-full flex justify-end">
@@ -464,13 +478,54 @@
                         }
                     ],
                     columnDefs: [{
-                        targets: 0,
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).addClass('text-center');
+                            targets: 0,
+                            createdCell: function(td, cellData, rowData, row, col) {
+                                $(td).addClass('text-center');
+                            }
+                        },
+                        {
+                            targets: -1,
+                            className: 'dt-body-right'
                         }
-                    }, ]
+                    ]
                 }).columns.adjust()
                 .responsive.recalc();
+
+            dataTable.on('draw', function() {
+                $('#exam thead th').css('border-top-right-radius', '0');
+
+                var visibleColumns = dataTable.columns(':visible').indexes().toArray();
+                var lastVisibleColumnIndex = visibleColumns[visibleColumns.length - 1];
+
+                if (lastVisibleColumnIndex !== undefined) {
+                    $('#exam thead th').eq(lastVisibleColumnIndex).css('border-top-right-radius', '8px');
+                    $('#exam tbody tr td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius',
+                        '8px');
+                }
+            });
+
+            // Mengatur border ketika kolom diperluas atau disembunyikan
+            dataTable.on('responsive-resize responsive-display', function() {
+                updateBorders();
+            });
+
+            // Fungsi untuk memperbarui border
+            function updateBorders() {
+                // Dapatkan indeks kolom terakhir yang terlihat
+                var visibleColumns = dataTable.columns(':visible').indexes().toArray();
+                var lastVisibleColumnIndex = visibleColumns[visibleColumns.length - 1];
+
+                console.log('Last visible column index:', lastVisibleColumnIndex);
+
+                if (lastVisibleColumnIndex != undefined) {
+                    $('#exam tbody tr').each(function() {
+                        $(this).find('td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius', '0px');
+                    });
+                }
+
+                console.log('Borders updated');
+            }
+
         });
 
         function setLoading(button, isLoading, text, type = 'add') {
@@ -629,6 +684,8 @@
             const input = event.target;
             const label = document.getElementById(elementId);
             const span = label.querySelector('span');
+
+            console.log(elementId);
 
             if (input.files.length > 0) {
                 span.textContent = input.files[0].name;

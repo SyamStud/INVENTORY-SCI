@@ -34,55 +34,55 @@ class InboundController extends Controller
             ->addColumn('created_at', function ($inbound) {
                 return $inbound->created_at->format('d F Y');
             })
-            ->addColumn('status', function ($inbound) {
-                // Definisikan mapping posisi
-                $positionMapping = [
-                    'approved_by' => 'PENGESAH',
-                    'released_by' => 'PENANGGUNG JAWAB',
-                    'received_by' => 'PENERIMA'
-                ];
+            // ->addColumn('status', function ($inbound) {
+            //     // Definisikan mapping posisi
+            //     $positionMapping = [
+            //         'approved_by' => 'PENGESAH',
+            //         'released_by' => 'PENANGGUNG JAWAB',
+            //         'received_by' => 'PENERIMA'
+            //     ];
 
-                $missingSignatures = [];
+            //     $missingSignatures = [];
 
-                // Cek setiap posisi yang perlu tanda tangan
-                foreach ($positionMapping as $field => $position) {
-                    if ($inbound->$field == Auth::user()->employee_id) {
-                        $hasSignature = $inbound->signatures()
-                            ->where('position', $position)
-                            ->exists();
+            //     // Cek setiap posisi yang perlu tanda tangan
+            //     foreach ($positionMapping as $field => $position) {
+            //         if ($inbound->$field == Auth::user()->employee_id) {
+            //             $hasSignature = $inbound->signatures()
+            //                 ->where('position', $position)
+            //                 ->exists();
 
-                        if (!$hasSignature) {
-                            $missingSignatures[] = $position;
-                        }
-                    }
-                }
+            //             if (!$hasSignature) {
+            //                 $missingSignatures[] = $position;
+            //             }
+            //         }
+            //     }
 
-                // Jika status masih pending
-                if ($inbound->status == 'pending') {
-                    $statusHtml = "<div class='flex items-center gap-2'>";
+            //     // Jika status masih pending
+            //     if ($inbound->status == 'pending') {
+            //         $statusHtml = "<div class='flex items-center gap-2'>";
 
-                    if (!empty($missingSignatures)) {
-                        // Tampilkan status menunggu tanda tangan
-                        $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
+            //         if (!empty($missingSignatures)) {
+            //             // Tampilkan status menunggu tanda tangan
+            //             $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
 
-                        // Tampilkan posisi yang belum tanda tangan
-                        foreach ($missingSignatures as $position) {
-                            $statusHtml .= "<span style='background-color: #dc2626' class='px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
-                        }
-                    } else {
-                        // Jika semua posisi sudah tanda tangan
-                        $statusHtml .= "<span style='background-color: #16a34a' class='px-2 py-1 text-white bg-green-600 rounded-md'>Sudah Ditandatangani</span>";
-                    }
+            //             // Tampilkan posisi yang belum tanda tangan
+            //             foreach ($missingSignatures as $position) {
+            //                 $statusHtml .= "<span style='background-color: #dc2626' class='px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
+            //             }
+            //         } else {
+            //             // Jika semua posisi sudah tanda tangan
+            //             $statusHtml .= "<span style='background-color: #16a34a' class='px-2 py-1 text-white bg-green-600 rounded-md'>Sudah Ditandatangani</span>";
+            //         }
 
-                    $statusHtml .= "</div>";
+            //         $statusHtml .= "</div>";
 
-                    return $statusHtml;
-                } else {
-                    return "<div class='flex items-center gap-2'>
-                                <span style='background-color: #15803d' class='px-2 py-1 text-white bg-green-700 rounded-md'>Disetujui</span>
-                            </div>";
-                }
-            })
+            //         return $statusHtml;
+            //     } else {
+            //         return "<div class='flex items-center gap-2'>
+            //                     <span style='background-color: #15803d' class='px-2 py-1 text-white bg-green-700 rounded-md'>Disetujui</span>
+            //                 </div>";
+            //     }
+            // })
             ->addColumn('detail', function ($inbounds) {
                 $inboundsJson = htmlspecialchars(json_encode($inbounds), ENT_QUOTES, 'UTF-8');
 

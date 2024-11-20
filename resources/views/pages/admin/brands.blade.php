@@ -7,7 +7,7 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+        <button class="flex w-full justify-center md:w-max md:justify-normal items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-brand')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
@@ -244,7 +244,7 @@
 
                     Toast.fire({
                         icon: 'success',
-                        title: 'Merek merek berhasil diubah'
+                        title: 'Merek berhasil diubah'
                     });
                 },
                 error: function(xhr) {
@@ -281,7 +281,7 @@
 
                     Toast.fire({
                         icon: 'success',
-                        title: 'Merek merek berhasil dihapus'
+                        title: 'Merek berhasil dihapus'
                     });
                 },
                 error: function(xhr) {

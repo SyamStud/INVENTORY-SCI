@@ -630,7 +630,7 @@
 
                         receiptForm.off('submit').on('submit', function(e) {
                             e.preventDefault();
-                            window.location.href = `/loans/receipt/${response.loan_id}`;
+                            window.location.href = `/documents/loans/download/${response.loan_id}`;
                         });
                     }
                 },
@@ -657,6 +657,4 @@
             }
         }
     </script>
-
-
 </x-app-layout>

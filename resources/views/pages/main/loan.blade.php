@@ -5,8 +5,6 @@
         <div class="w-full flex justify-center md:justify-start">
             <h2 id="code" class="font-semibold text-xl text-gray-800 leading-tight">
             </h2>
-            {{-- <h2 id="date" class="font-semibold text-xl text-gray-800 leading-tight">
-            </h2> --}}
         </div>
     </x-slot>
 
@@ -47,7 +45,7 @@
                     })">
                         @foreach ($assets as $asset)
                             <option value="{{ $asset->id }}">
-                                {{ $asset->name . " || " . $asset->serial_number }}
+                                {{ $asset->name . ' || ' . $asset->serial_number }}
                             </option>
                         @endforeach
                     </select>
@@ -56,13 +54,13 @@
                 <div class="mb-4 w-full md:w-52">
                     <x-input-label for="quantity" :value="__('Kuantitas')" />
                     <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required
-                        autofocus />
+                        min="1" autofocus />
                 </div>
 
                 <div class="mb-4 w-full md:w-96">
                     <x-input-label for="duration" :value="__('Durasi (Hari)')" />
                     <x-text-input id="duration" class="block mt-1 w-full" type="number" name="duration" required
-                        autofocus />
+                        min="1" autofocus />
                 </div>
 
                 <div class="mb-4 w-full md:w-96">
@@ -140,12 +138,12 @@
                     <div class="mb-4">
                         <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
                         <x-text-input id="edit_quantity" class="block mt-1 w-full" type="number" name="quantity"
-                            required x-bind:value="asset?.quantity" autofocus />
+                            min="1" required x-bind:value="asset?.quantity" autofocus />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_duration" :value="__('Durasi')" />
                         <x-text-input id="edit_duration" class="block mt-1 w-full" type="number" name="duration"
-                            required autofocus x-bind:value="asset?.duration" />
+                            min="1" required autofocus x-bind:value="asset?.duration" />
                     </div>
 
                     <div class="mb-4">

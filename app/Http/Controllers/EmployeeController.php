@@ -204,4 +204,21 @@ class EmployeeController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+    public function isExist()
+    {
+        $employees = Employee::where('branch_id', Auth::user()->branch_id)->get();
+
+        if ($employees->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pegawai belum ditambahkan',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $employees,
+        ], 200);
+    }
 }

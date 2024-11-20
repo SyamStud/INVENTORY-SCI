@@ -81,10 +81,10 @@ class LoanController extends Controller
         return DataTables::of($loans)
             ->addIndexColumn()
             ->addColumn('operation_head', function ($loans) {
-                return $loans->user->name;
+                return $loans->operationHead->name;
             })
             ->addColumn('loan_officer', function ($loans) {
-                return $loans->user->name;
+                return $loans->loanOfficer->name;
             })
             ->addColumn('general_division', function ($loans) {
                 return $loans->generalDivision->name;
@@ -104,15 +104,15 @@ class LoanController extends Controller
 
                 // Cek setiap posisi yang perlu tanda tangan
                 foreach ($positionMapping as $field => $position) {
-                    if ($loan->$field == Auth::user()->employee_id) {
-                        $hasSignature = $loan->signatures()
-                            ->where('position', $position)
-                            ->exists();
+                    // if ($loan->$field == Auth::user()->employee_id) {
+                    $hasSignature = $loan->signatures()
+                        ->where('position', $position)
+                        ->exists();
 
-                        if (!$hasSignature) {
-                            $missingSignatures[] = $position;
-                        }
+                    if (!$hasSignature) {
+                        $missingSignatures[] = $position;
                     }
+                    // }
                 }
 
                 // Jika status masih pending
@@ -125,7 +125,7 @@ class LoanController extends Controller
 
                         // Tampilkan posisi yang belum tanda tangan
                         foreach ($missingSignatures as $position) {
-                            $statusHtml .= "<span style='background-color: #dc2626' class='px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
+                            $statusHtml .= "<span style='background-color: #dc2626' class='hidden md:flex px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
                         }
                     } else {
                         // Jika semua posisi sudah tanda tangan
@@ -157,15 +157,15 @@ class LoanController extends Controller
 
                 // Cek setiap posisi yang perlu tanda tangan
                 foreach ($positionMapping as $field => $position) {
-                    if ($loans->$field == Auth::user()->employee_id) {
-                        $hasSignature = $loans->signatures()
-                            ->where('position', $position)
-                            ->exists();
+                    // if ($loans->$field == Auth::user()->employee_id) {
+                    $hasSignature = $loans->signatures()
+                        ->where('position', $position)
+                        ->exists();
 
-                        if (!$hasSignature) {
-                            $missingSignatures[] = $position;
-                        }
+                    if (!$hasSignature) {
+                        $missingSignatures[] = $position;
                     }
+                    // }
                 }
 
                 // Jika status masih pending

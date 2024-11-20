@@ -112,7 +112,11 @@ class AdminController extends Controller
 
     public function getAdmins()
     {
-        $users = User::with('branchOffice')->orderByDesc('created_at');
+        $users = User::with('branchOffice')
+            ->whereHas('roles', function ($query) {
+            $query->where('name', 'admin');
+            })
+            ->orderByDesc('created_at');
 
         return DataTables::of($users)
             ->addIndexColumn()

@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar pengeluaran Barang
+            Bukti Pengeluaran Barang
         </h2>
     </x-slot>
 

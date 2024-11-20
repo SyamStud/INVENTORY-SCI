@@ -107,6 +107,9 @@ class ItemController extends Controller
             ->addColumn('price', function ($item) {
                 return 'Rp ' . number_format($item->price, 0, ',', '.');
             })
+            ->addColumn('stock', function ($item) {
+                return $item->stock ?? 0;
+            })
             ->addColumn('action', function ($item) {
                 $itemJson = htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8');
 

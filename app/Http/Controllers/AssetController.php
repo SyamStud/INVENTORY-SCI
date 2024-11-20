@@ -111,14 +111,16 @@ class AssetController extends Controller
             }
         }
 
-        // $file = $request->file('calibration');
-        // $fileName = time() . '.' . $file->extension();
-
-        // $filePath = $file->storeAs('assets', $fileName, 'public');
         $asset->calibration = json_encode($calibrationFiles);
 
         $asset->branch_id = Auth::user()->branch_id;
         $asset->save();
+
+
+        // $file = $request->file('calibration');
+        // $fileName = time() . '.' . $file->extension();
+
+        // $filePath = $file->storeAs('assets', $fileName, 'public');
 
         return response()->json([
             'status' => 'success',
@@ -157,27 +159,33 @@ class AssetController extends Controller
             $photoName = time() . '.' . $photo->extension();
 
             $photoPath = $photo->storeAs('assets/photos', $photoName, 'public');
-            $asset->photo = 'assets/photos' . $photoName;
+            $asset->photo = 'assets/photos/' . $photoName;
         }
 
         if ($request->hasFile('calibration')) {
             Storage::disk('public')->delete($asset->calibration);
 
-            $file = $request->file('calibration');
-            $fileName = time() . '.' . $file->extension();
+            $calibrationFiles = [];
+            foreach ($request->file('calibration') as $file) {
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('assets/calibrations', $fileName, 'public');
 
-            $filePath = $file->storeAs('assets/calibrations', $fileName, 'public');
-            $asset->calibration = 'assets/calibrations' . $fileName;
+            $calibrationFiles[] = [
+                'name' => $file->getClientOriginalName(),
+                'path' => $path
+            ];
+            }
+            $asset->calibration = json_encode($calibrationFiles);
         }
 
         if ($request->hasFile('procurement')) {
             Storage::disk('public')->delete($asset->procurement);
 
-            $file = $request->file('procurement');
-            $fileName = time() . '.' . $file->extension();
+            $procurement = $request->file('procurement');
+            $procurementName = time() . '.' . $procurement->extension();
 
-            $filePath = $file->storeAs('assets/procurements', $fileName, 'public');
-            $asset->procurement = 'assets/procurements' . $fileName;
+            $procurementPath = $procurement->storeAs('assets/procurements', $procurementName, 'public');
+            $asset->procurement = 'assets/procurements/' . $procurementName;
         }
 
         $asset->save();

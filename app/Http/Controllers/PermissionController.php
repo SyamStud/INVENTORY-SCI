@@ -30,9 +30,9 @@ class PermissionController extends Controller
             $user->syncPermissions($request->permissions ?? []);
             Log::info('User permissions updated', ['user' => $user->id, 'permissions' => $request->permissions]);
 
-            return redirect()->back()->with('success', 'Permissions updated successfully');
+            return redirect()->back()->with('success', 'Hak Akses berhasil diperbarui');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while updating permissions: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi Kesalahan: ' . $e->getMessage());
         }
     }
 

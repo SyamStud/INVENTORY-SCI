@@ -54,8 +54,8 @@ class InboundTempController extends Controller
             'contract_note_number' => 'required',
             'delivery_note_number' => 'required',
             'item_id' => 'required',
-            'quantity' => 'required',
-            'cost' => 'required',
+            'quantity' => 'required|min:1',
+            'cost' => 'required|min:1',
         ]);
 
         if ($validation->fails()) {

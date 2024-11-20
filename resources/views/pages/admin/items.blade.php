@@ -7,7 +7,7 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+        <button class="flex w-full justify-center md:w-max md:justify-normal items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-item')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
@@ -26,12 +26,6 @@
                         <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
                             autofocus />
                     </div>
-
-                    {{-- <div class="mb-4">
-                        <x-input-label for="price" :value="__('Harga')" />
-                        <x-text-input id="price" class="block mt-1 w-full" type="number" name="price " required
-                            autofocus />
-                    </div> --}}
 
                     <div class="mb-4 w-full">
                         <x-input-label for="name" :value="__('Satuan Unit')" />
@@ -88,11 +82,11 @@
                         x-bind:value="item?.name" autofocus />
                 </div>
 
-                <div class="mb-4">
+                {{-- <div class="mb-4">
                     <x-input-label for="edit_price" :value="__('Harga')" />
                     <x-text-input id="edit_price" class="block mt-1 w-full" type="text" name="price" required
                         x-bind:value="item?.price" autofocus />
-                </div>
+                </div> --}}
 
                 <div class="mb-4 w-full">
                     <x-input-label for="name" :value="__('Satuan Unit')" />

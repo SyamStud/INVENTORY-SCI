@@ -83,15 +83,13 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BranchOffice $branchOffice)
+    public function update(Request $request, $id)
     {
+        $branchOffice = BranchOffice::find($id);
+        
         $validation = Validator::make($request->all(), [
             'name' => 'required',
             'code' => 'required',
-            'province_id' => 'required',
-            'regency_id' => 'required',
-            'district_id' => 'required',
-            'village_id' => 'required',
         ]);
 
         if ($validation->fails()) {
@@ -104,11 +102,31 @@ class BranchController extends Controller
         $branchOffice->update([
             'name' => $request->name,
             'code' => strtoupper($request->code),
-            'province_id' => $request->province_id,
-            'regency_id' => $request->regency_id,
-            'district_id' => $request->district_id,
-            'village_id' => $request->village_id,
         ]);
+
+        if ($request->province_id) {
+            $branchOffice->update([
+                'province_id' => $request->province_id,
+            ]);
+        }
+
+        if ($request->regency_id) {
+            $branchOffice->update([
+                'regency_id' => $request->regency_id,
+            ]);
+        }
+
+        if ($request->district_id) {
+            $branchOffice->update([
+                'district_id' => $request->district_id,
+            ]);
+        }
+
+        if ($request->village_id) {
+            $branchOffice->update([
+                'village_id' => $request->village_id,
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',

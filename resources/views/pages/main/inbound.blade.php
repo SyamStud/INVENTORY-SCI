@@ -58,13 +58,13 @@
 
                 <div class="mb-4 w-full md:w-52">
                     <x-input-label for="quantity" :value="__('Kuantitas')" />
-                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required
+                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" min="1" required
                         autofocus />
                 </div>
 
                 <div class="mb-4 w-full md:w-96">
                     <x-input-label for="cost" :value="__('Harga Satuan')" />
-                    <x-text-input id="cost" class="block mt-1 w-full" type="number" name="cost" required
+                    <x-text-input id="cost" class="block mt-1 w-full" type="number" name="cost" min="1" required
                         autofocus />
                 </div>
 
@@ -124,12 +124,12 @@
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
-                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity"
+                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity" min="1"
                             required x-bind:value="item?.quantity" autofocus />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_cost" :value="__('Harga Satuan')" />
-                        <x-text-input id="edit_cost" class="block mt-1 w-full" type="text" name="cost"
+                        <x-text-input id="edit_cost" class="block mt-1 w-full" type="text" name="cost" min="1"
                             required x-bind:value="item?.cost" autofocus />
                     </div>
 
@@ -163,7 +163,7 @@
                     <div class="w-full flex justify-end">
                         <button type="submit"
                             class="justify-end flex items-center gap-1 px-4 py-2 bg-red-700 rounded-md text-white font-medium text-sm">
-                            Batalkan Penerimaan
+                            Hapus Barang
                         </button>
                     </div>
                 </form>
@@ -522,6 +522,8 @@
                     $('#order_note_number').val('');
                     $('#contract_note_number').val('');
                     $('#delivery_note_number').val('');
+                    $('#quantity').val('');
+                    $('#cost').val('');
 
                     dispatchEvent(new CustomEvent('close-modal', {
                         detail: 'cancel-inbound'
@@ -567,6 +569,8 @@
                     $('#order_note_number').val('');
                     $('#contract_note_number').val('');
                     $('#delivery_note_number').val('');
+                    $('#quantity').val('');
+                    $('#cost').val('');
 
                     // Close confirm-inbound modal
                     dispatchEvent(new CustomEvent('close-modal', {
@@ -578,19 +582,6 @@
                         icon: 'success',
                         title: response.message
                     });
-
-                    // // Open receipt-letter modal
-                    // dispatchEvent(new CustomEvent('open-modal', {
-                    //     detail: 'receipt-letter'
-                    // }));
-
-                    // const receiptForm = $('#receiptForm');
-
-                    // receiptForm.off('submit').on('submit', function(e) {
-                    //     e.preventDefault();
-                    //     console.log(response.inbound_id);
-                    //     window.location.href = `/inbounds/receipt/${response.inbound_id}`;
-                    // });
                 },
                 error: function(xhr) {
                     console.error(xhr);

@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar pemasukan Barang
+            Bukti Penerimaan Barang
         </h2>
     </x-slot>
 
@@ -20,7 +20,7 @@
                         <th>Penyerah</th>
                         <th class="w-20">Tanggal</th>
                         <th class="w-20">Detail Aset</th>
-                        <th class="w-20">Status</th>
+                        {{-- <th class="w-20">Status</th> --}}
                     </tr>
                 </thead>
             </table>
@@ -153,12 +153,12 @@
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'status',
-                            name: 'status',
-                            orderable: false,
-                            searchable: false
-                        },
+                        // {
+                        //     data: 'status',
+                        //     name: 'status',
+                        //     orderable: false,
+                        //     searchable: false
+                        // },
                     ],
                     columnDefs: [{
                             targets: [0, 6],

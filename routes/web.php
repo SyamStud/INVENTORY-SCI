@@ -1,6 +1,9 @@
 <?php
 
+use Dompdf\Dompdf;
 use App\Models\Inbound;
+use Illuminate\Http\Request;
+use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +35,24 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/tes', function () {
+    return view('welcome');
+});
+
+Route::post('/upload-docx', function (Request $request) {
+    if ($request->hasFile('docxFile')) {
+        $uploadedFile = $request->file('docxFile');
+        $filePath = $uploadedFile->store('docx', 'public'); // Simpan file di folder storage/app/public/docx
+
+        return response()->json([
+            'success' => true,
+            'fileUrl' => asset('storage/' . $filePath),
+        ]);
+    }
+
+    return response()->json(['success' => false, 'error' => 'No file uploaded']);
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -49,15 +70,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/items/getItems', [ItemController::class, 'getItems'])->name('items.data')->middleware('role_or_permission:admin|manage-items');
         Route::resource('/items', ItemController::class)->middleware('role_or_permission:admin|manage-items');
 
-        Route::get('/positions/getPositions', [PositionController::class, 'getPositions'])->name('positions.data')->middleware('role_or_permission:admin|manage-positions');
-        Route::resource('/positions', PositionController::class)->middleware('role_or_permission:admin|manage-positions');
+        Route::get('/positions/getPositions', [PositionController::class, 'getPositions'])->name('positions.data')->middleware('role_or_permission:admin|manage-employees');
+        Route::resource('/positions', PositionController::class)->middleware('role_or_permission:admin|manage-employees');
 
+        Route::get('/employees/isExist', [EmployeeController::class,  'isExist'])->middleware('role_or_permission:admin|manage-employees');
         Route::post('/employees/store/headOffice', [EmployeeController::class,  'storeHeadOffice'])->name('employees.store.headOffice')->middleware('role_or_permission:admin|manage-employees');
         Route::get('/employees/getEmployees', [EmployeeController::class,  'getEmployees'])->name('employees.data')->middleware('role_or_permission:admin|manage-employees');
         Route::resource('/employees', EmployeeController::class)->middleware('role_or_permission:admin|manage-employees');
 
-        Route::get('/brands/getBrands', [BrandController::class, 'getBrands'])->name('brands.data')->middleware('role_or_permission:admin|manage-brands');
-        Route::resource('/brands', BrandController::class)->middleware('role_or_permission:admin|manage-brands');
+        Route::get('/brands/getBrands', [BrandController::class, 'getBrands'])->name('brands.data')->middleware('role_or_permission:admin|manage-assets');
+        Route::resource('/brands', BrandController::class)->middleware('role_or_permission:admin|manage-assets');
 
         Route::get('/assets/getAssets', [AssetController::class, 'getAssets'])->name('assets.data')->middleware('role_or_permission:admin|manage-assets');
         Route::get('/assets/other/getAssets', [AssetController::class, 'getAssetsOtherBranch'])->name('assets.other.data')->middleware('role_or_permission:admin|manage-assets');

@@ -110,6 +110,10 @@
             branch: null,
             setBranch(data) {
                 this.branch = data;
+                // Panggil fungsi untuk mengisi data lokasi
+                this.$nextTick(() => {
+                    populateEditLocationData(data);
+                });
             }
         }" @set-branch.window="setBranch($event.detail)">
             <h5 class="font-semibold text-md">Edit Satuan Branch</h5>
@@ -121,7 +125,7 @@
                 <div class="mb-4">
                     <x-input-label for="name" :value="__('Nama Daerah Administrasi Cabang')" />
                     <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required
-                        autofocus placeholder="Contoh: Cilacap, Semarang, Cirebon" x-bind:value="branch?.name"/>
+                        autofocus placeholder="Contoh: Cilacap, Semarang, Cirebon" x-bind:value="branch?.name" />
                     <p class="text-sm text-gray-400 mt-1">Nama akan digunakan untuk administrasi seperti
                         kop surat, dll.</p>
                 </div>
@@ -129,8 +133,51 @@
                 <div class="mb-4">
                     <x-input-label for="code" :value="__('Kode Kantor Cabang')" />
                     <x-text-input id="code" class="block mt-1 w-full" type="text" name="code" required
-                        autofocus x-bind:value="branch?.code"/>
+                        autofocus x-bind:value="branch?.code" />
                     <p class="text-sm text-gray-400 mt-1">Kode akan digunakan untuk nomor surat, dll.</p>
+                </div>
+
+                <div class="mb-4 w-full">
+                    <x-input-label for="edit_province_id" :value="__('Provinsi')" />
+                    <select class="w-full select2" name="province_id" id="edit_province_id" x-data
+                        x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                        <option value="">Pilih Provinsi</option>
+                        @foreach ($provinces as $province)
+                            <option value="{{ $province->id }}">{{ $province->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4 w-full edit_regency-wrapper">
+                    <x-input-label for="edit_regency_id" :value="__('Kabupaten/Kota')" />
+                    <select class="w-full select2" name="regency_id" id="edit_regency_id" x-data
+                        x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                        <option value="">Pilih Kabupaten/Kota</option>
+                    </select>
+                </div>
+
+                <div class="mb-4 w-full edit_district-wrapper">
+                    <x-input-label for="edit_district_id" :value="__('Kecamatan')" />
+                    <select class="w-full select2" name="district_id" id="edit_district_id" x-data
+                        x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                        <option value="">Pilih Kecamatan</option>
+                    </select>
+                </div>
+
+                <div class="mb-4 w-full edit_village-wrapper">
+                    <x-input-label for="edit_village_id" :value="__('Desa/Kelurahan')" />
+                    <select class="w-full select2" name="village_id" id="edit_village_id" x-data
+                        x-init="$nextTick(() => {
+                            $('.select2').select2(); // Inisialisasi Select2
+                        })">
+                        <option value="">Pilih Desa/Kelurahan</option>
+                    </select>
                 </div>
 
                 <input type="hidden" name="branch_id" x-bind:value="branch?.id">
@@ -269,7 +316,137 @@
                     $('.village-wrapper').hide();
                 }
             });
+
+            // Event handler untuk Province pada modal edit
+            $('#edit_province_id').on('change', function() {
+                var provinceId = $(this).val();
+
+                // Reset dan sembunyikan dropdown dibawahnya
+                $('#edit_regency_id').empty().append('<option value="">Pilih Kabupaten/Kota</option>');
+                $('#edit_district_id').empty().append('<option value="">Pilih Kecamatan</option>');
+                $('#edit_village_id').empty().append('<option value="">Pilih Desa/Kelurahan</option>');
+
+                $('.edit_district-wrapper, .edit_village-wrapper').hide();
+
+                if (provinceId) {
+                    $('.edit_regency-wrapper').show();
+                    $.ajax({
+                        url: '/super-admin/get-regencies',
+                        type: 'POST',
+                        data: {
+                            province_id: provinceId,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $('#edit_regency_id').append('<option value="' + value
+                                    .id + '">' + value.name + '</option>');
+                            });
+                            $('#edit_regency_id').select2('destroy').select2();
+                        }
+                    });
+                } else {
+                    $('.edit_regency-wrapper').hide();
+                }
+            });
+
+            // Event handler untuk Regency pada modal edit
+            $('#edit_regency_id').on('change', function() {
+                var regencyId = $(this).val();
+
+                // Reset dan sembunyikan dropdown dibawahnya
+                $('#edit_district_id').empty().append('<option value="">Pilih Kecamatan</option>');
+                $('#edit_village_id').empty().append('<option value="">Pilih Desa/Kelurahan</option>');
+
+                $('.edit_village-wrapper').hide();
+
+                if (regencyId) {
+                    $('.edit_district-wrapper').show();
+                    $.ajax({
+                        url: '/super-admin/get-districts',
+                        type: 'POST',
+                        data: {
+                            regency_id: regencyId,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $('#edit_district_id').append('<option value="' + value
+                                    .id + '">' + value.name + '</option>');
+                            });
+                            $('#edit_district_id').select2('destroy').select2();
+                        }
+                    });
+                } else {
+                    $('.edit_district-wrapper').hide();
+                }
+            });
+
+            // Event handler untuk District pada modal edit
+            $('#edit_district_id').on('change', function() {
+                var districtId = $(this).val();
+
+                // Reset dropdown desa
+                $('#edit_village_id').empty().append('<option value="">Pilih Desa/Kelurahan</option>');
+
+                if (districtId) {
+                    $('.edit_village-wrapper').show();
+                    $.ajax({
+                        url: '/super-admin/get-villages',
+                        type: 'POST',
+                        data: {
+                            district_id: districtId,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $('#edit_village_id').append('<option value="' + value
+                                    .id + '">' + value.name + '</option>');
+                            });
+                            $('#edit_village_id').select2('destroy').select2();
+                        }
+                    });
+                } else {
+                    $('.edit_village-wrapper').hide();
+                }
+            });
         });
+
+        // Fungsi untuk mengisi data lokasi saat modal edit dibuka
+        function populateEditLocationData(branch) {
+            // Set nilai provinsi
+            $('#edit_province_id').val(branch.province_id).trigger('change');
+
+            // Tunggu data kabupaten terload
+            setTimeout(() => {
+                $('#edit_regency_id').val(branch.regency_id).trigger('change');
+
+                setTimeout(() => {
+                    $('#edit_regency_id').val(branch.regency_id);
+
+                    // Tunggu data kecamatan terload
+                    setTimeout(() => {
+                        $('#edit_district_id').val(branch.district_id).trigger('change');
+
+                        // Tunggu data desa terload
+                        setTimeout(() => {
+                            $('#edit_district_id').val(branch.district_id);
+
+                            setTimeout(() => {
+                                $('#edit_district_id').val(branch.district_id);
+                                $('#edit_village_id').val(branch.village_id)
+                                    .trigger('change');
+                                $('#edit_village_id').val(branch.village_id);
+                            }, 500);
+                        }, 500);
+
+
+                    }, 500);
+                }, 500);
+
+
+            }, 500);
+        }
     </script>
 
     <script>
@@ -408,7 +585,6 @@
             const submitButton = $(form).find('button[type="submit"]');
 
             setLoading(submitButton, true, 'Simpan Perubahan', 'edit');
-            console.log(branchId);
 
             $.ajax({
                 url: `/super-admin/branches/${branchId}`,

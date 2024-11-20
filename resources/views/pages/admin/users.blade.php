@@ -7,7 +7,7 @@
     </x-slot>
 
     <main class="px-10 mt-10">
-        <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+        <button class="flex w-full justify-center md:w-max md:justify-normal items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-user')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
@@ -61,8 +61,8 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nama Pengguna</th>
-                        <th>NPP Pengguna</th>
+                        <th>Nama</th>
+                        <th>NPP</th>
                         <th>Email</th>
                         <th class="w-40">Aksi</th>
                     </tr>

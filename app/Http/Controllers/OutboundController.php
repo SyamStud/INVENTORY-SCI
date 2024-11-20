@@ -54,7 +54,7 @@ class OutboundController extends Controller
                         if (!$hasSignature) {
                             $missingSignatures[] = 'PENERIMA';
                         }
-                    } else if ($outbound->$field == Auth::user()->employee_id) {
+                    } else {
                         $hasSignature = $outbound->signatures()
                             ->where('position', $position)
                             ->exists();
@@ -76,7 +76,7 @@ class OutboundController extends Controller
                         // Tampilkan posisi yang belum tanda tangan
                         foreach ($missingSignatures as $position) {
                             if ($position == 'PENERIMA') {
-                                $statusHtml .= "<a href='/documents/outbounds/sign/{$outbound->id}' class='flex gap-2 items-center px-2 py-1 text-white rounded-md' style='background-color: #133E87;'>
+                                $statusHtml .= "<a href='/outbounds/sign/{$outbound->id}' class='flex gap-2 items-center px-2 py-1 text-white rounded-md' style='background-color: #133E87;'>
                                                     <img class='w-4' src='https://img.icons8.com/?size=100&id=9ZFMqzgXThYz&format=png&color=FFFFFF' alt=''>
                                                     {$position}
                                                 </a>";
@@ -110,21 +110,21 @@ class OutboundController extends Controller
 
                 // Cek setiap posisi yang perlu tanda tangan
                 foreach ($positionMapping as $field => $position) {
-                    if ($outbounds->$field == Auth::user()->employee_id) {
-                        $hasSignature = $outbounds->signatures()
-                            ->where('position', $position)
-                            ->exists();
-
-                        if (!$hasSignature) {
-                            $missingSignatures[] = $position;
-                        }
-                    } else if ($field == 'received_by') {
+                    if ($field == 'received_by') {
                         $hasSignature = $outbounds->signatures()
                             ->where('position', 'PENERIMA')
                             ->exists();
 
                         if (!$hasSignature) {
                             $missingSignatures[] = 'PENERIMA';
+                        }
+                    } else {
+                        $hasSignature = $outbounds->signatures()
+                            ->where('position', $position)
+                            ->exists();
+
+                        if (!$hasSignature) {
+                            $missingSignatures[] = $position;
                         }
                     }
                 }

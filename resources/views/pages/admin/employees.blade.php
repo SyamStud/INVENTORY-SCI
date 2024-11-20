@@ -42,7 +42,7 @@
 
         <h5 class="font-semibold text-xl">Daftar Pegawai</h5>
 
-        <button class="mt-5 flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
+        <button class="mt-5 flex w-full justify-center md:w-max md:justify-normal items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-employee')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
                 alt="">
