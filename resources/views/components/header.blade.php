@@ -14,6 +14,11 @@
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.3/dist/docx-preview.min.js"></script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -32,6 +37,20 @@
             border: 2px dashed #ccc;
             border-radius: 4px;
             touch-action: none;
+        }
+
+        #viewer {
+            width: 100%;
+            max-height: 600px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: #4A5568 #EDF2F7;
+        }
+
+        #viewer img {
+            all: unset;
         }
     </style>
 
@@ -303,15 +322,6 @@
             z-index: 10;
             /* Agar tetap di atas tabel */
         }
-
-        /* Pastikan elemen-elemen kontrol tidak tergulung */
-        /* #exam_wrapper .dataTables_filter,
-        #exam_wrapper .dataTables_length,
-        #exam_wrapper .dataTables_paginate {
-            position: sticky;
-            top: 0;
-            z-index: 0;
-        } */
 
         /* Menambahkan padding atau margin pada tabel untuk memberi ruang pada elemen kontrol */
         #exam {

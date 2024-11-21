@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Item;
 use App\Models\Employee;
 use App\Models\Outbound;
 use App\Models\OutboundTemp;
 use Illuminate\Http\Request;
 use App\Models\OutboundItemTemp;
+use App\Services\GotenbergService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use Intervention\Image\ImageManagerStatic as Image;
 
 class OutboundTempController extends Controller
 {
+    protected $gotenbergService;
+
+    public function __construct(GotenbergService $gotenbergService)
+    {
+        $this->gotenbergService = $gotenbergService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -282,7 +290,7 @@ class OutboundTempController extends Controller
             'status' => 'success',
             'message' => 'Pengeluaran berhasil dikonfirmasi',
             'outbound_id' => $outbound->id,
-            'document' => $document['pdf']
+            // 'document' => $document['pdf']
         ]);
     }
 
@@ -303,269 +311,137 @@ class OutboundTempController extends Controller
         }
     }
 
-    public function receipt($id)
+    public function saveDocument($id, $type = 'save')
     {
+        /* TYPE [SAVE, PREVIEW, DOWNLOAD]
+            SAVE => GENERATE FILE UNTUK PREVIEW HALAMAN SIGN 
+            PREVIEW => PREVIEW DOKUMEN DI RIWAYAT PENGELUARAN (LIHAT DOKUMEN)
+            DOWNLOAD => UNTUK UNDUH DOKUMEN DI HALAMAN SIGN */
+
         try {
             $outbound = Outbound::find($id);
 
-            $regencyName = Auth::user()->branchOffice->regency->name;
-            $regencyName = strtolower($regencyName);
-            $regencyName = preg_replace('/^(KABUPATEN|KOTA)\s+/i', '', $regencyName);
-            $regencyName = ucwords($regencyName);
+            $docxPath = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx');
 
-            $phpWord = new TemplateProcessor('template_outbound.docx');
+            // GENERATE DOCX FROM TEMPLATE
+            if (!file_exists($docxPath)) {
+                $regencyName = Auth::user()->branchOffice->regency->name;
+                $regencyName = strtolower($regencyName);
+                $regencyName = preg_replace('/^(KABUPATEN|KOTA)\s+/i', '', $regencyName);
+                $regencyName = ucwords($regencyName);
 
-            // Set template values
-            $phpWord->setValue('branch', strtoupper(Auth::user()->branchOffice->name));
-            $phpWord->setValue('outbound_number', $outbound->outbound_number);
-            $phpWord->setValue('created_at', $outbound->created_at->locale('id')->isoFormat('D MMMM YYYY'));
-            $phpWord->setValue('release_to', $outbound->release_to);
-            $phpWord->setValue('release_reason', $outbound->release_reason);
-            $phpWord->setValue('request_note_number', $outbound->request_note_number);
-            $phpWord->setValue('delivery_note_number', $outbound->delivery_note_number);
-            $phpWord->setValue('regency', $regencyName);
-            $phpWord->setValue('date', now()->locale('id')->isoFormat('D MMMM YYYY'));
-            $phpWord->setValue('approved_by', $outbound->approvedBy->name);
-            $phpWord->setValue('released_by', $outbound->releasedBy->name);
-            $phpWord->setValue('received_by', $outbound->received_by);
+                $phpWord = new TemplateProcessor('template_outbound.docx');
 
-            $photos = json_decode($outbound->photo, true);
+                // Set template values
+                $phpWord->setValue('branch', strtoupper(Auth::user()->branchOffice->name));
+                $phpWord->setValue('outbound_number', $outbound->outbound_number);
+                $phpWord->setValue('created_at', $outbound->created_at->locale('id')->isoFormat('D MMMM YYYY'));
+                $phpWord->setValue('release_to', $outbound->release_to);
+                $phpWord->setValue('release_reason', $outbound->release_reason);
+                $phpWord->setValue('request_note_number', $outbound->request_note_number);
+                $phpWord->setValue('delivery_note_number', $outbound->delivery_note_number);
+                $phpWord->setValue('regency', $regencyName);
+                $phpWord->setValue('date', now()->locale('id')->isoFormat('D MMMM YYYY'));
+                $phpWord->setValue('approved_by', $outbound->approvedBy->name);
+                $phpWord->setValue('released_by', $outbound->releasedBy->name);
+                $phpWord->setValue('received_by', $outbound->received_by);
 
-            foreach ($photos as $index => $photo) {
-                // Get image dimensions
-                $imageInfo = getimagesize(storage_path('app/public/' . $photo));
-                $originalWidth = $imageInfo[0];
-                $originalHeight = $imageInfo[1];
-                $originalRatio = $originalWidth / $originalHeight;
-                Log::info($originalRatio);
+                if ($outbound->signatures->count() >= 3) {
+                    Log::info('masuk sini');
+                    $signatures = [
+                        'approved_by' => $outbound->signatures->where('position', 'PENGESAH')->first()->signature_path,
+                        'released_by' => $outbound->signatures->where('position', 'PENANGGUNG JAWAB')->first()->signature_path,
+                        'received_by' => $outbound->signatures->where('position', 'PENERIMA')->first()->signature_path,
+                    ];
 
-                // Target width tetap 345
-                $targetWidth = 345;
-                $targetHeight = 613;
-
-                // Kalkulasi height yang sebenarnya setelah scaling
-                $actualHeight = $targetWidth / $originalRatio;
-
-                // Jika rasio lebih lebar (seperti 16:9)
-                if ($originalRatio > 1) {
-                    $phpWord->setImageValue('photo_' . ($index + 1), [
-                        'path' => storage_path('app/public/' . $photo),
-                        'width' => 345,
-                        'height' => 192,
+                    $phpWord->setImageValue('sign_approved_by', [
+                        'path' => storage_path('app/public/' . $signatures['approved_by']),
+                        'width' => 100,
+                        'height' => 50,
+                        'ratio' => false,
+                    ]);
+                    $phpWord->setImageValue('sign_released_by', [
+                        'path' => storage_path('app/public/' . $signatures['released_by']),
+                        'width' => 100,
+                        'height' => 50,
+                        'ratio' => false,
+                    ]);
+                    $phpWord->setImageValue('sign_received_by', [
+                        'path' => storage_path('app/public/' . $signatures['received_by']),
+                        'width' => 100,
+                        'height' => 50,
                         'ratio' => false,
                     ]);
                 } else {
-                    // Untuk gambar portrait (9:16), gunakan setting normal
-                    $phpWord->setImageValue('photo_' . ($index + 1), [
-                        'path' => storage_path('app/public/' . $photo),
-                        'width' => $targetWidth,
-                        'height' => $targetHeight,
-                        'ratio' => true
-                    ]);
+                    $phpWord->setValue('sign_approved_by', ' ');
+                    $phpWord->setValue('sign_released_by', ' ');
+                    $phpWord->setValue('sign_received_by', ' ');
                 }
-            }
 
-            // Process items
-            $values = [];
-            foreach ($outbound->items as $index => $outboundItem) {
-                $total = $outboundItem->quantity * $outboundItem->price;
+                $photos = json_decode($outbound->photo, true);
 
-                $values[$index] = [
-                    'no' => $index + 1,
-                    'item_name' => $outboundItem->item->name,
-                    'quantity' => $outboundItem->quantity,
-                    'price' => number_format($outboundItem->price, 0, ',', '.'),
-                    'total' => number_format($total, 0, ',', '.')
-                ];
-            }
+                foreach ($photos as $index => $photo) {
 
-            $phpWord->cloneRowAndSetValues('no', $values);
-
-            // Output ke browser
-            $tempDocx = storage_path('app/public/outbound/outbound.docx');
-            $phpWord->saveAs($tempDocx);
-
-            $docxPath = storage_path('app/public/outbound/outbound.docx');
-            $pdfPath = storage_path('app/public/outbound/outbound.pdf');
-
-            $pythonScriptPath = base_path('scripts/word2pdf.py');
-
-            // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
-            $command = "python $pythonScriptPath $docxPath $pdfPath";
-            exec($command);
-
-            // Baca file PDF
-            $content = file_get_contents($pdfPath);
-
-            // Cleanup temp files
-            unlink($tempDocx);
-            unlink($pdfPath);
-
-            return response($content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
-
-
-            // $libreOfficePath = "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
-            // if (!file_exists($libreOfficePath)) {
-            //     $errorMessage = "LibreOffice not found at the expected location: " . $libreOfficePath;
-            //     error_log($errorMessage);
-            //     return response($errorMessage, 500);
-            // }
-
-            // $command = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe" --headless --convert-to pdf --outdir "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\outbound') . '" "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\outbound\\test.docx') . '"';
-            // exec($command, $output, $returnCode);
-
-
-            // if ($returnCode !== 0) {
-            //     $errorMessage = "Error converting document to PDF. Command output:\n" . implode("\n", $output);
-            //     error_log($errorMessage);
-            //     return response($errorMessage, 500);
-            // }
-
-            // $pdfPath = str_replace('.docx', '.pdf', $tempDocx);
-            // $content = file_get_contents($pdfPath);
-
-            // // Cleanup temp files
-            // unlink($tempDocx);
-            // unlink($pdfPath);
-
-            // return response($content, 200, [
-            //     'Content-Type' => 'application/pdf',
-            //     'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
-            //     'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            //     'Pragma' => 'no-cache',
-            //     'Expires' => '0',
-            // ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function saveDocument($id, $preview = false)
-    {
-        try {
-            $outbound = Outbound::find($id);
-
-            $regencyName = Auth::user()->branchOffice->regency->name;
-            $regencyName = strtolower($regencyName);
-            $regencyName = preg_replace('/^(KABUPATEN|KOTA)\s+/i', '', $regencyName);
-            $regencyName = ucwords($regencyName);
-
-            $phpWord = new TemplateProcessor('template_outbound.docx');
-
-            // Set template values
-            $phpWord->setValue('branch', strtoupper(Auth::user()->branchOffice->name));
-            $phpWord->setValue('outbound_number', $outbound->outbound_number);
-            $phpWord->setValue('created_at', $outbound->created_at->locale('id')->isoFormat('D MMMM YYYY'));
-            $phpWord->setValue('release_to', $outbound->release_to);
-            $phpWord->setValue('release_reason', $outbound->release_reason);
-            $phpWord->setValue('request_note_number', $outbound->request_note_number);
-            $phpWord->setValue('delivery_note_number', $outbound->delivery_note_number);
-            $phpWord->setValue('regency', $regencyName);
-            $phpWord->setValue('date', now()->locale('id')->isoFormat('D MMMM YYYY'));
-            $phpWord->setValue('approved_by', $outbound->approvedBy->name);
-            $phpWord->setValue('released_by', $outbound->releasedBy->name);
-            $phpWord->setValue('received_by', $outbound->received_by);
-
-            if ($outbound->signatures->count() >= 3) {
-                Log::info('masuk sini');
-                $signatures = [
-                    'approved_by' => $outbound->signatures->where('position', 'PENGESAH')->first()->signature_path,
-                    'released_by' => $outbound->signatures->where('position', 'PENANGGUNG JAWAB')->first()->signature_path,
-                    'received_by' => $outbound->signatures->where('position', 'PENERIMA')->first()->signature_path,
-                ];
-
-                $phpWord->setImageValue('sign_approved_by', [
-                    'path' => storage_path('app/public/' . $signatures['approved_by']),
-                    'width' => 100,
-                    'height' => 50,
-                    'ratio' => false,
-                ]);
-                $phpWord->setImageValue('sign_released_by', [
-                    'path' => storage_path('app/public/' . $signatures['released_by']),
-                    'width' => 100,
-                    'height' => 50,
-                    'ratio' => false,
-                ]);
-                $phpWord->setImageValue('sign_received_by', [
-                    'path' => storage_path('app/public/' . $signatures['received_by']),
-                    'width' => 100,
-                    'height' => 50,
-                    'ratio' => false,
-                ]);
-            } else {
-                $phpWord->setValue('sign_approved_by', ' ');
-                $phpWord->setValue('sign_released_by', ' ');
-                $phpWord->setValue('sign_received_by', ' ');
-            }
-
-            $photos = json_decode($outbound->photo, true);
-
-            foreach ($photos as $index => $photo) {
-
-                if ($photo == null) {
-                    $phpWord->setValue('photo_' . ($index + 1), ' ');
-                } else {
-                    $imageInfo = getimagesize(storage_path('app/public/' . $photo));
-                    $originalWidth = $imageInfo[0];
-                    $originalHeight = $imageInfo[1];
-                    $originalRatio = $originalWidth / $originalHeight;
-
-                    $targetWidth = 345;
-                    $targetHeight = 613;
-
-                    // Jika rasio lebih lebar (seperti 16:9)
-                    if ($originalRatio > 1) {
-                        $phpWord->setImageValue('photo_' . ($index + 1), [
-                            'path' => storage_path('app/public/' . $photo),
-                            'width' => 345,
-                            'height' => 192,
-                            'ratio' => false,
-                        ]);
+                    if ($photo == null) {
+                        $phpWord->setValue('photo_' . ($index + 1), ' ');
                     } else {
-                        // Untuk gambar portrait (9:16), gunakan setting normal
-                        $phpWord->setImageValue('photo_' . ($index + 1), [
-                            'path' => storage_path('app/public/' . $photo),
-                            'width' => $targetWidth,
-                            'height' => $targetHeight,
-                            'ratio' => true
-                        ]);
+                        $imageInfo = getimagesize(storage_path('app/public/' . $photo));
+                        $originalWidth = $imageInfo[0];
+                        $originalHeight = $imageInfo[1];
+                        $originalRatio = $originalWidth / $originalHeight;
+
+                        $targetWidth = 345;
+                        $targetHeight = 613;
+
+                        // Jika rasio lebih lebar (seperti 16:9)
+                        if ($originalRatio > 1) {
+                            $phpWord->setImageValue('photo_' . ($index + 1), [
+                                'path' => storage_path('app/public/' . $photo),
+                                'width' => 345,
+                                'height' => 192,
+                                'ratio' => false,
+                            ]);
+                        } else {
+                            // Untuk gambar portrait (9:16), gunakan setting normal
+                            $phpWord->setImageValue('photo_' . ($index + 1), [
+                                'path' => storage_path('app/public/' . $photo),
+                                'width' => $targetWidth,
+                                'height' => $targetHeight,
+                                'ratio' => true
+                            ]);
+                        }
                     }
                 }
+
+                // Process items
+                $values = [];
+                foreach ($outbound->items as $index => $outboundItem) {
+                    $total = $outboundItem->quantity * $outboundItem->price;
+
+                    $values[$index] = [
+                        'no' => $index + 1,
+                        'item_name' => $outboundItem->item->name,
+                        'quantity' => $outboundItem->quantity,
+                        'price' => number_format($outboundItem->price, 0, ',', '.'),
+                        'total' => number_format($total, 0, ',', '.')
+                    ];
+                }
+
+                $phpWord->cloneRowAndSetValues('no', $values);
+
+                // Output ke browser
+                $tempDocx = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx');
+                $phpWord->saveAs($tempDocx);
+
+                $outbound->update(['document_path' => 'documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx']);
             }
 
-            // Process items
-            $values = [];
-            foreach ($outbound->items as $index => $outboundItem) {
-                $total = $outboundItem->quantity * $outboundItem->price;
+            if ($type == 'preview' || $type == 'download') {
+                $pdfPath = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.pdf');
 
-                $values[$index] = [
-                    'no' => $index + 1,
-                    'item_name' => $outboundItem->item->name,
-                    'quantity' => $outboundItem->quantity,
-                    'price' => number_format($outboundItem->price, 0, ',', '.'),
-                    'total' => number_format($total, 0, ',', '.')
-                ];
-            }
+                if (file_exists($pdfPath)) {
+                    $content = file_get_contents($pdfPath);
 
-            $phpWord->cloneRowAndSetValues('no', $values);
-
-            // Output ke browser
-            $tempDocx = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx');
-            $phpWord->saveAs($tempDocx);
-
-            $docxPath = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx');
-            $pdfPath = storage_path('app/public/documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.pdf');
-
-            if (file_exists($pdfPath)) {
-                $content = file_get_contents($pdfPath);
-
-                if ($preview) {
                     return response($content, 200, [
                         'Content-Type' => 'application/pdf',
                         'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
@@ -574,53 +450,40 @@ class OutboundTempController extends Controller
                         'Expires' => '0',
                     ]);
                 } else {
-                    return [
-                        'status' => 'success',
-                        'message' => 'PDF berhasil dibuat',
-                        'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
-                    ];
+                    $inputPath = $docxPath;
+                    $outputPath = $pdfPath;
+
+                    try {
+                        $this->gotenbergService->convertDocxToPdf($inputPath, $outputPath);
+                    } catch (Exception $e) {
+                        return response()->json([
+                            'error' => $e->getMessage(),
+                        ], 500);
+                    }
+
+                    // Baca file PDF
+                    $content = file_get_contents($pdfPath);
+
+                    $outbound->update(['document_path' => 'documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.docx']);
+
+                    if ($type == 'preview') {
+                        unlink($docxPath);
+                    }
+
+                    return response($content, 200, [
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
+                        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                        'Pragma' => 'no-cache',
+                        'Expires' => '0',
+                    ]);
                 }
             }
 
-            // $pythonScriptPath = base_path('scripts/word2pdf.py');
-
-            // // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
-            // $command = "python $pythonScriptPath $docxPath $pdfPath";
-            // exec($command);
-
-            $libreOfficePath = "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
-            if (!file_exists($libreOfficePath)) {
-                $errorMessage = "LibreOffice not found at the expected location: " . $libreOfficePath;
-                error_log($errorMessage);
-                return response($errorMessage, 500);
-            }
-
-            $command = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe" --headless --convert-to pdf --outdir "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\outbounds') . '" "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\outbounds\\' . str_replace('/', '-', $outbound->outbound_number) . '.docx') . '"';
-            exec($command, $output, $returnCode);
-
-            // Baca file PDF
-            $content = file_get_contents($pdfPath);
-
-            // Cleanup temp files
-            unlink($tempDocx);
-
-            $outbound->update(['document_path' => 'documents/outbounds/' . str_replace('/', '-', $outbound->outbound_number) . '.pdf']);
-
-            if ($preview) {
-                return response($content, 200, [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
-                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                    'Pragma' => 'no-cache',
-                    'Expires' => '0',
-                ]);
-            } else {
-                return [
-                    'status' => 'success',
-                    'message' => 'PDF berhasil dibuat',
-                    'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
-                ];
-            }
+            return [
+                'status' => 'success',
+                'message' => 'DOCX berhasil dibuat',
+            ];
         } catch (\Exception $e) {
             log::info($e->getMessage());
         }

@@ -17,6 +17,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "docx-preview": "^0.3.3",
         "signature_pad": "^5.0.4"
     }
 }

@@ -1,45 +1,23 @@
+{{-- resources/views/documents/sign.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
 <x-header></x-header>
 
 <body class="bg-gray-100">
-    <div id="viewer-container">
-    </div>
-
     <div class="container mx-auto p-4">
-        <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex gap-4">
             <!-- PDF Preview Section -->
-            <div class="w-full md:w-2/3 bg-white rounded-lg shadow-md p-4">
-                <h2 class="hidden md:block text-lg font-semibold mb-4">Preview Dokumen</h2>
-                <div class="hidden md:block" id="viewer"></div>
-
-                <!-- Mobile View: Informasi Tidak Tersedia -->
-                <div
-                    class="md:hidden flex flex-col items-center bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 p-4 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 text-yellow-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12.88V12a9 9 0 10-9 9 8.998 8.998 0 009-8.12z" />
-                    </svg>
-                    <p class="text-center font-medium text-lg">Preview dokumen tidak tersedia di perangkat seluler</p>
-                    <p class="text-center text-sm text-gray-600 mt-1">Silakan gunakan perangkat dengan layar lebih besar
-                        atau unduh dokumen untuk melihat isinya.</p>
-                </div>
-
-                <!-- Link Unduh Dokumen -->
-                <a href="/documents/outbounds/download/{{ $outbound->id }}/download" target="_blank"
-                    class="block text-center text-blue-700 underline font-medium mt-4 hover:text-blue-500 transition">
-                    Unduh Dokumen
-                </a>
+            <div class="w-1/2 bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-4">Preview Dokumen</h2>
+                <embed src="{{ route('documents.outbounds.preview', $outbound->id) }}" type="application/pdf" width="100%"
+                    height="600px" />
             </div>
 
-
             <!-- Signature Pad Section -->
-            <div class="w-full md:w-1/3 bg-white rounded-lg shadow-md p-4">
-                <h2 class="text-lg font-semibold mb-4">TANDA TANGAN</h2>
-                <canvas id="signatureCanvas" class="w-full h-[350px] sm:h-[300px] bg-white mb-4"></canvas>
-
+            <div class="w-1/2 bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-4">Tanda Tangan</h2>
+                <canvas id="signatureCanvas" width="500" height="300" class="w-full bg-white mb-4"></canvas>
                 <div class="flex gap-2">
                     <button id="clearButton" class="w-1/2 px-4 py-2 bg-gray-700 text-white rounded-md font-medium">
                         Hapus
@@ -78,47 +56,6 @@
     </x-modal>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        const viewer = document.getElementById('viewer');
-
-        async function renderDocx(arrayBuffer) {
-            try {
-                await docx.renderAsync(arrayBuffer, viewer, viewer, {
-                    className: 'docx',
-                    inWrapper: true,
-                    ignoreWidth: false,
-                    ignoreHeight: false,
-                    ignoreFonts: false,
-                    breakPages: true,
-                    experimental: false,
-                    trimXmlDeclaration: true,
-                    debug: true
-                });
-            } catch (error) {
-                console.error('Error:', error);
-                viewer.innerHTML = 'Error: Gagal memproses file DOCX';
-            }
-        }
-
-        loadPublicFile();
-
-        async function loadPublicFile() {
-            try {
-                const response = await fetch(`/storage/{{ $outbound->document_path }}`);
-
-                console.log(response);
-                if (!response.ok) throw new Error('File tidak ditemukan');
-
-                const arrayBuffer = await response.arrayBuffer();
-                await renderDocx(arrayBuffer);
-            } catch (error) {
-                console.error('Error loading public file:', error);
-                viewer.innerHTML = 'Error: Gagal memuat file dari folder public';
-            }
-        }
-    </script>
-
     <script>
         const canvas = document.getElementById('signatureCanvas');
         const signaturePad = new SignaturePad(canvas, {
@@ -126,6 +63,9 @@
         });
 
         $(document).ready(function() {
+
+
+            // Resize canvas to fit container
             function resizeCanvas() {
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
                 canvas.width = canvas.offsetWidth * ratio;

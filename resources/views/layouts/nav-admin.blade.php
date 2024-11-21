@@ -164,6 +164,15 @@
                 {{ __('Halaman Utama') }}
             </x-responsive-nav-link>
 
+            <x-responsive-dropdown title="Persetujuan Dokumen">
+                <x-responsive-nav-link :href="route('documents.loans.index')">
+                    Dokumen Peminjaman Aset
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('documents.outbounds.index')">
+                    Dokumen Pengeluaran Barang
+                </x-responsive-nav-link>
+            </x-responsive-dropdown>
+
             <x-responsive-dropdown title="Aset">
                 <x-responsive-nav-link :href="route('assets.index')">
                     Daftar Aset

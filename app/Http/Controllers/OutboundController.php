@@ -138,7 +138,7 @@ class OutboundController extends Controller
                         $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
                     } else {
                         // Jika semua posisi sudah tanda tangan
-                        $statusHtml .= "<a href='/documents/outbounds/download/{$outbounds->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                        $statusHtml .= "<a href='/documents/outbounds/download/{$outbounds->id}/preview' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                                             <img class='w-5' src='https://img.icons8.com/?size=100&id=9ZFMqzgXThYz&format=png&color=FFFFFF' alt=''>
                                             Lihat Dokumen
                                         </a>";
@@ -149,7 +149,7 @@ class OutboundController extends Controller
                     return $statusHtml;
                 }
 
-                return "<a href='/documents/outbounds/download/{$outbounds->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                return "<a href='/documents/outbounds/download/{$outbounds->id}/preview' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                     <img class='w-5' src='https://img.icons8.com/?size=100&id=VNxIqSP5pHwD&format=png&color=FFFFFF' alt=''>
                     Lihat Dokumen
                 </a>";

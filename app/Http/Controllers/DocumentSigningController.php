@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inbound;
 use App\Models\Loan;
+use App\Models\Inbound;
 use App\Models\Outbound;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -162,13 +163,13 @@ class DocumentSigningController extends Controller
             // Cek setiap posisi yang perlu tanda tangan
             foreach ($positionMapping as $field => $position) {
                 // if ($document->$field == Auth::user()->employee_id) {
-                    $hasSignature = $document->signatures()
-                        ->where('position', $position)
-                        ->exists();
+                $hasSignature = $document->signatures()
+                    ->where('position', $position)
+                    ->exists();
 
-                    if (!$hasSignature) {
-                        $missingSignatures[] = $position;
-                    }
+                if (!$hasSignature) {
+                    $missingSignatures[] = $position;
+                }
                 // }
             }
 
@@ -223,23 +224,47 @@ class DocumentSigningController extends Controller
     public function OutboundPreview($id)
     {
         try {
-            $outbound = Outbound::find($id);
+            // Temukan data outbound berdasarkan ID
+            $outbound = Outbound::findOrFail($id);
 
+            // Path ke file di penyimpanan lokal
             $path = storage_path('app/public/' . $outbound->document_path);
 
-            $content = file_get_contents($path);
+            // Periksa apakah file ada
+            if (!file_exists($path)) {
+                return response()->json(['error' => 'File not found'], 404);
+            }
 
-            return response($content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            // Mengembalikan file untuk ditampilkan
+            return response()->json(['path' => $outbound->document_path]);
         } catch (\Exception $e) {
+            // Tangkap error dan kembalikan pesan JSON
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    // public function OutboundPreview($id)
+    // {
+    //     try {
+    //         $outbound = Outbound::find($id);
+
+    //         $path = storage_path('app/public/' . $outbound->document_path);
+
+    //         $content = file_get_contents($path);
+
+    //         return response($content);
+
+    //         // return response($content, 200, [
+    //         //     'Content-Type' => 'application/pdf',
+    //         //     'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
+    //         //     'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    //         //     'Pragma' => 'no-cache',
+    //         //     'Expires' => '0',
+    //         // ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
 
     public function getPendingLoans()
     {
