@@ -8,7 +8,9 @@
         </div>
     </x-slot>
 
-    <main id="content" class="px-10 mt-10">
+    <main class="px-10 mt-10 relative">
+        <x-spinner></x-spinner>
+
         <form onsubmit="handleAddItem(event)">
             @csrf
 
@@ -125,8 +127,8 @@
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
-                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity" min="1"
-                            required x-bind:value="item?.quantity" autofocus />
+                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="text" name="quantity"
+                            min="1" required x-bind:value="item?.quantity" autofocus />
                     </div>
 
                     <div class="w-full flex justify-end">
@@ -380,13 +382,27 @@
 
 
         let dataTable;
-
+        let isInitialLoad = true;
         $(function() {
             dataTable = $('#exam').DataTable({
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('outbounds.temp.data') }}",
+                    ajax: {
+                        url: "{{ route('outbounds.temp.data') }}",
+                        beforeSend: function() {
+                            // Tampilkan spinner hanya saat initial load
+                            if (isInitialLoad) {
+                                $('#loading-spinner').show();
+                            }
+                        },
+                        complete: function() {
+                            // Sembunyikan spinner
+                            $('#loading-spinner').hide();
+                            // Set isInitialLoad menjadi false setelah load pertama
+                            isInitialLoad = false;
+                        }
+                    },
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',

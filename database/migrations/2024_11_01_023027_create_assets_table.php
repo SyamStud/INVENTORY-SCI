@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('correction_factor');
             $table->enum('significance', ['ya', 'tidak']);
             $table->string('photo');
+            $table->enum('availability', ['on_loan', 'ready', 'maintenance', 'broken'])->default('ready');
             $table->foreignId('branch_id')->constrained('branch_offices');
             $table->timestamps();
         });

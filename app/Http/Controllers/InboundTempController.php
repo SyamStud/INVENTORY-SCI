@@ -48,11 +48,9 @@ class InboundTempController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'inbound_number' => 'required',
-            'received_from' => 'required',
+            'po_number' => 'required',
+            'bpg_number' => 'required',
             'order_note_number' => 'required',
-            'contract_note_number' => 'required',
-            'delivery_note_number' => 'required',
             'item_id' => 'required',
             'quantity' => 'required|min:1',
             'cost' => 'required|min:1',
@@ -71,12 +69,10 @@ class InboundTempController extends Controller
 
         if (!$isExist) {
             $inbound = InboundTemp::create([
-                'inbound_number' => $request->inbound_number,
-                'received_from' => $request->received_from,
+                'po_number' => $request->po_number,
+                'bpg_number' => $request->bpg_number,
                 'order_note_number' => $request->order_note_number,
-                'contract_note_number' => $request->contract_note_number,
-                'delivery_note_number' => $request->delivery_note_number,
-                'date_received' => now(),
+                'date' => $request->date,
                 'total_cost' => 0,
                 'branch_id' => Auth::user()->branch_id,
                 'user_id' => Auth::id(),
@@ -87,15 +83,12 @@ class InboundTempController extends Controller
                 ->first();
 
             $inbound->update([
-                'inbound_number' => $request->inbound_number,
-                'received_from' => $request->received_from,
+                'po_number' => $request->po_number,
+                'bpg_number' => $request->bpg_number,
                 'order_note_number' => $request->order_note_number,
-                'contract_note_number' => $request->contract_note_number,
-                'delivery_note_number' => $request->delivery_note_number,
+                'date' => $request->date,
             ]);
         }
-
-        $totalCost = 0;
 
         $isExist = InboundItemTemp::where('inbound_temp_id', $inbound->id)
             ->where('item_id', $request->item_id)
@@ -135,9 +128,6 @@ class InboundTempController extends Controller
         $inboundItemTemp = InboundItemTemp::where('id', $id)
             ->where('branch_id', Auth::user()->branch_id)
             ->first();
-
-        Log::info($inboundItemTemp);
-        Log::info($id);
 
         $validation = Validator::make($request->all(), [
             'inbound_item_id' => 'required',
@@ -182,9 +172,7 @@ class InboundTempController extends Controller
 
     public function cancelInbound(Request $request)
     {
-        $inbound = InboundTemp::where('inbound_number', $request->inbound_number)
-            ->where('branch_id', Auth::user()->branch_id)
-            ->first();
+        $inbound = InboundTemp::find($request->id);
 
         $inbound->delete();
 
@@ -216,12 +204,10 @@ class InboundTempController extends Controller
         });
 
         $inbound = Inbound::create([
-            'inbound_number' => $inboundTemp->inbound_number,
-            'received_from' => $inboundTemp->received_from,
+            'po_number' => $inboundTemp->po_number,
+            'bpg_number' => $inboundTemp->bpg_number,
             'order_note_number' => $inboundTemp->order_note_number,
-            'contract_note_number' => $inboundTemp->contract_note_number,
-            'delivery_note_number' => $inboundTemp->delivery_note_number,
-            'date_received' => $inboundTemp->date_received,
+            'date' => $inboundTemp->date,
             'received_by' => $inboundTemp->received_by,
             'total_cost' => $inboundTemp->total_cost,
             'branch_id' => $inboundTemp->branch_id,
@@ -281,9 +267,9 @@ class InboundTempController extends Controller
 
             // Set template values
             $phpWord->setValue('branch', strtoupper(Auth::user()->branchOffice->name));
-            $phpWord->setValue('inbound_number', $inbound->inbound_number);
+            $phpWord->setValue('po_number', $inbound->po_number);
             $phpWord->setValue('created_at', $inbound->created_at->locale('id')->isoFormat('D MMMM YYYY'));
-            $phpWord->setValue('received_from', $inbound->received_from);
+            $phpWord->setValue('bpg_number', $inbound->bpg_number);
             $phpWord->setValue('order_note_number', $inbound->order_note_number);
             $phpWord->setValue('contract_note_number', $inbound->contract_note_number);
             $phpWord->setValue('delivery_note_number', $inbound->delivery_note_number);
@@ -327,7 +313,7 @@ class InboundTempController extends Controller
 
             return response($content, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $inbound->inbound_number . '.pdf"',
+                'Content-Disposition' => 'inline; filename="' . $inbound->po_number . '.pdf"',
                 'Cache-Control' => 'no-cache, no-store, must-revalidate',
                 'Pragma' => 'no-cache',
                 'Expires' => '0',
@@ -360,7 +346,7 @@ class InboundTempController extends Controller
 
             // return response($content, 200, [
             //     'Content-Type' => 'application/pdf',
-            //     'Content-Disposition' => 'inline; filename="' . $inbound->inbound_number . '.pdf"',
+            //     'Content-Disposition' => 'inline; filename="' . $inbound->po_number . '.pdf"',
             //     'Cache-Control' => 'no-cache, no-store, must-revalidate',
             //     'Pragma' => 'no-cache',
             //     'Expires' => '0',

@@ -8,7 +8,9 @@
         </div>
     </x-slot>
 
-    <main class="px-10 mt-10">
+    <main class="px-10 mt-10 relative">
+        <x-spinner></x-spinner>
+
         <form onsubmit="handleAddItem(event)">
             @csrf
 
@@ -45,16 +47,10 @@
                     })">
                         @foreach ($assets as $asset)
                             <option value="{{ $asset->id }}">
-                                {{ $asset->name . ' || ' . $asset->serial_number }}
+                                {{ $asset->name . ' | ' . $asset->brand->name . ' | ' . $asset->serial_number }}
                             </option>
                         @endforeach
                     </select>
-                </div>
-
-                <div class="mb-4 w-full md:w-52">
-                    <x-input-label for="quantity" :value="__('Kuantitas')" />
-                    <x-text-input id="quantity" class="block mt-1 w-full" type="number" name="quantity" required
-                        min="1" autofocus />
                 </div>
 
                 <div class="mb-4 w-full md:w-96">
@@ -106,7 +102,6 @@
                         <th>Nama Aset</th>
                         <th>Merek</th>
                         <th>Serial Number</th>
-                        <th>Kuantitas</th>
                         <th>Durasi</th>
                         <th>Kondisi</th>
                         <th>Catatan</th>
@@ -134,11 +129,6 @@
                         <x-input-label for="edit_asset_name" :value="__('Nama Aset')" />
                         <x-text-input id="edit_asset_name" class="block mt-1 w-full bg-gray-200 text-gray-500"
                             type="text" name="asset_name" disabled x-bind:value="asset?.asset.name" autofocus />
-                    </div>
-                    <div class="mb-4">
-                        <x-input-label for="edit_quantity" :value="__('Kuantitas')" />
-                        <x-text-input id="edit_quantity" class="block mt-1 w-full" type="number" name="quantity"
-                            min="1" required x-bind:value="asset?.quantity" autofocus />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="edit_duration" :value="__('Durasi')" />
@@ -203,7 +193,7 @@
                     <div class="w-full flex justify-end">
                         <button type="submit"
                             class="justify-end flex assets-center gap-1 px-4 py-2 bg-red-700 rounded-md text-white font-medium text-sm">
-                            Batalkan Peminjaman
+                            Hapus Aset
                         </button>
                     </div>
                 </form>
@@ -394,13 +384,28 @@
         }
 
         let dataTable;
+        let isInitialLoad = true;
 
         $(function() {
             dataTable = $('#exam').DataTable({
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('loans.temp.data') }}",
+                    ajax: {
+                        url: "{{ route('loans.temp.data') }}",
+                        beforeSend: function() {
+                            // Tampilkan spinner hanya saat initial load
+                            if (isInitialLoad) {
+                                $('#loading-spinner').show();
+                            }
+                        },
+                        complete: function() {
+                            // Sembunyikan spinner
+                            $('#loading-spinner').hide();
+                            // Set isInitialLoad menjadi false setelah load pertama
+                            isInitialLoad = false;
+                        }
+                    },
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -422,10 +427,6 @@
                         {
                             data: 'serial_number',
                             name: 'serial_number'
-                        },
-                        {
-                            data: 'quantity',
-                            name: 'quantity'
                         },
                         {
                             data: 'duration',
@@ -453,7 +454,7 @@
                             }
                         },
                         {
-                            targets: 9,
+                            targets: 8,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center gap-2 w-max');
                             }
@@ -468,6 +469,7 @@
             const form = event.target;
             const formData = new FormData(form);
             const submitButton = $(form).find('button[type="submit"]');
+            const selectedAssetId = formData.get('asset_id');
             console.log(formData);
 
             setLoading(submitButton, true, 'Tambah Aset');
@@ -484,7 +486,20 @@
                     } else {
                         $('#loan-action').css('display', 'flex');
                     }
-                    $('.select2').select2();
+
+                    // Remove the selected asset from select2 options
+                    const $select2 = $('.select2');
+                    const currentOptions = $select2.find('option').toArray();
+                    const updatedOptions = currentOptions.filter(option => option.value !== selectedAssetId);
+
+                    // Clear and rebuild select2
+                    $select2.empty();
+                    updatedOptions.forEach(option => {
+                        $select2.append(option);
+                    });
+
+                    // Reinitialize select2
+                    $select2.select2();
 
                     if (response.status == 'error') {
                         Toast.fire({
@@ -560,18 +575,31 @@
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
-            const assetId = formData.get('loan_asset_id');
+            const loanAssetId = formData.get('loan_asset_id');
             const submitButton = $(form).find('button[type="submit"]');
 
             setLoading(submitButton, true, 'Hapus Aset', 'delete');
 
             $.ajax({
-                url: `/loans/${assetId}`,
+                url: `/loans/${loanAssetId}`,
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function(response) {
+                    if (response.loan_asset) {
+                        const $select = $('select[name="asset_id"]');
+                        const newOption = new Option(
+                            `${response.loan_asset.asset_name} | ${response.loan_asset.brand_name} | ${response.loan_asset.serial_number}`,
+                            response.loan_asset.asset_id,
+                            false,
+                            false
+                        );
+
+                        $select.append(newOption);
+                        $select.trigger('change');
+                    }
+
                     dataTable.ajax.reload();
                     dispatchEvent(new CustomEvent('close-modal', {
                         detail: 'delete-asset'
@@ -584,6 +612,10 @@
                 },
                 error: function(xhr) {
                     console.error(xhr);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan saat menghapus asset'
+                    });
                 },
                 complete: function() {
                     setTimeout(() => {
@@ -611,9 +643,25 @@
                     $('#loan-action').css('display', 'none');
                     $('.select2').select2();
 
-
                     dataTable.ajax.reload();
                     generateCode();
+
+                    if (response.assets) {
+                        const $select = $('select[name="asset_id"]');
+                        let assets = response.assets;
+
+                        assets.forEach(asset => {
+                            const newOption = new Option(
+                                `${asset.asset_name} | ${asset.brand_name} | ${asset.serial_number}`,
+                                asset.asset_id,
+                                false,
+                                false
+                            );
+
+                            $select.append(newOption);
+                        });
+                        $select.trigger('change');
+                    }
 
                     $('#customer_name').val('');
                     $('#order_note_number').val('');
@@ -672,19 +720,6 @@
                         icon: 'success',
                         title: response.message
                     });
-
-                    // Open receipt-letter modal
-                    dispatchEvent(new CustomEvent('open-modal', {
-                        detail: 'receipt-letter'
-                    }));
-
-                    const receiptForm = $('#receiptForm');
-
-                    receiptForm.off('submit').on('submit', function(e) {
-                        e.preventDefault();
-                        console.log(response.document);
-                        window.location.href = `/storage/${response.document}`;
-                    });
                 },
                 error: function(xhr) {
                     console.error(xhr);
@@ -704,7 +739,13 @@
                 button.html('Mohon Tunggu...');
             } else {
                 button.prop('disabled', false);
-                button.css('background-color', '#2563EB');
+                if (type === 'add') {
+                    button.css('background-color', '#15803D');
+                } else if (type === 'edit') {
+                    button.css('background-color', '#C07F00');
+                } else if (type === 'delete') {
+                    button.css('background-color', '#b91c1c');
+                }
                 button.html(text);
             }
         }

@@ -9,7 +9,8 @@
         </div>
     </x-slot>
 
-    <main class="px-10 mt-10">
+    <main class="px-10 mt-10 relative">
+
         <form onsubmit="handleSearchReturn(event)">
             @csrf
 
@@ -38,7 +39,7 @@
                 <div class="flex w-full justify-between items-center">
                     <h5 id="customer_name" class="text-lg font-semibold">Nama Pelanggan : </h5>
                     <button type="submit"
-                        class="w-full md:w-max h-max bg-green-600 px-4 py-2 rounded-md font-semibold text-white mt-2">Konfirmasi
+                        class="w-full md:w-max h-max bg-green-700 px-4 py-2 rounded-md font-semibold text-white mt-2">Konfirmasi
                         Pengembalian</button>
                 </div>
             </div>
@@ -51,7 +52,6 @@
                             <th>Nama Aset</th>
                             <th>Merek</th>
                             <th>Serial Number</th>
-                            <th class="w-40">Kuantitas</th>
                             <th class="w-40">Kondisi Peminjaman</th>
                             <th class="w-40">Kondisi Pengembalian</th>
                             <th>Catatan</th>
@@ -264,10 +264,6 @@
                             name: 'serial_number'
                         },
                         {
-                            data: 'quantity',
-                            name: 'quantity'
-                        },
-                        {
                             data: 'loan_check',
                             name: 'loan_check'
                         },
@@ -321,19 +317,19 @@
                             }
                         },
                         {
-                            targets: [3, 5, 6],
+                            targets: [3, 5],
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('w-32 text-center');
                             }
                         },
                         {
-                            targets: 7,
+                            targets: 6,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex w-42 justify-center');
                             }
                         },
                         {
-                            targets: 8,
+                            targets: 7,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('w-56');
                             }
@@ -630,7 +626,8 @@
 
                         receiptForm.off('submit').on('submit', function(e) {
                             e.preventDefault();
-                            window.location.href = `/documents/loans/download/${response.loan_id}`;
+                            window.location.href =
+                                `/documents/returns/download/${response.loan_id}/true/${response.loan_number}`;
                         });
                     }
                 },

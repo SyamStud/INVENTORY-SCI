@@ -30,6 +30,7 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReturnAssetController;
 use App\Http\Controllers\OutboundTempController;
 use App\Http\Controllers\DocumentSigningController;
+use App\Http\Controllers\MonitoringController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -148,7 +149,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/getPendingLoans', [DocumentSigningController::class, 'getPendingLoans'])->name('documents.loans.pending');
             Route::get('/loans/sign/{id}', [DocumentSigningController::class, 'signLoan'])->name('documents.loans.sign');
             Route::get('/loans/preview/{id}', [DocumentSigningController::class, 'LoanPreview'])->name('documents.loans.preview');
-            Route::get('/loans/download/{id}/{preview}', [LoanTempController::class, 'saveDocument'])->name('documents.loans.download');
+            Route::get('/loans/download/{id}/{type}', [LoanTempController::class, 'saveDocument'])->name('documents.loans.download');
 
             Route::get('/outbounds', [DocumentSigningController::class, 'outboundIndex'])->name('documents.outbounds.index');
             Route::get('/getPendingOutbounds', [DocumentSigningController::class, 'getPendingOutbounds'])->name('documents.outbounds.pending');
@@ -160,18 +161,22 @@ Route::middleware('auth')->group(function () {
         });
     });
 
+    Route::prefix('monitoring')->group(function () {
+        Route::get('/procurements', [MonitoringController::class, 'procurementIndex'])->name('monitoring.procurements.index');
+        Route::get('/procurements/getProcurements', [MonitoringController::class, 'procurementData'])->name('monitoring.procurements.data');
+        
+        Route::get('/permits', [MonitoringController::class, 'permitIndex'])->name('monitoring.permits.index');
+        Route::get('/permits/getPermits', [MonitoringController::class, 'permitData'])->name('monitoring.permits.data');
+        
+        Route::get('/assets', [MonitoringController::class, 'assetIndex'])->name('monitoring.assets.index');
+        Route::get('/assets/getAssets', [MonitoringController::class, 'assetData'])->name('monitoring.assets.data');
+
+        Route::get('/loanAssets', [MonitoringController::class, 'loanAssetIndex'])->name('monitoring.loanAssets.index');
+        Route::get('/loanAssets/getLoanAssets', [MonitoringController::class, 'loanAssetData'])->name('monitoring.loanAssets.data');
+    });
+
     // MAIN ROUTES
     Route::middleware('role_or_permission:admin|manage-inventories')->group(function () {
-        // GENERATE CODE
-        Route::get('/inbounds/generate-code', function () {
-            $count = DB::table('inbounds')->count() + 1;
-            $branchCode = Auth::user()->branchOffice->code;
-
-            $code = sprintf("%d/" . $branchCode . "/BPG/%d", $count, now()->year);
-
-            return response()->json(['code' => $code]);
-        });
-
         Route::get('/outbounds/generate-code', function () {
             $count = DB::table('outbounds')->count() + 1;
             $branchCode = Auth::user()->branchOffice->code;
@@ -215,16 +220,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/returns/confirm', [ReturnAssetController::class, 'storeReturn'])->name('returns.confirm');
         Route::get('/returns/getReturns', [ReturnAssetController::class, 'getReturns'])->name('returns.data');
         Route::resource('/returns', ReturnAssetController::class);
-
-        Route::get('/permits/getPermits', [PermitController::class, 'getPermits'])->name('permits.data');
-        Route::resource('/permits', PermitController::class);
-
-        Route::get('/procurements/getProcurements', [ProcurementController::class, 'getProcurements'])->name('procurements.data');
-        Route::resource('/procurements', ProcurementController::class);
-
-        Route::get('/loans/receipt/{id}', [LoanTempController::class, 'receipt'])
-            ->name('loans.receipt');
     });
+
+    Route::get('/permits/getPermits', [PermitController::class, 'getPermits'])->name('permits.data')->middleware('role_or_permission:employee|admin|manage-inventories');
+    Route::resource('/permits', PermitController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
+
+    Route::get('/procurements/getProcurements', [ProcurementController::class, 'getProcurements'])->name('procurements.data')->middleware('role_or_permission:employee|admin|manage-inventories');
+    Route::resource('/procurements', ProcurementController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
 });
 
 require __DIR__ . '/auth.php';

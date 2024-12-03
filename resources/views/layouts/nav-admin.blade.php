@@ -20,13 +20,13 @@
                         </a>
                     @endif
 
-                    @if (!Auth::user()->hasRole('super-admin'))
+                    @if (Auth::user()->hasRole('admin'))
                         <x-nav-link class="hidden md:flex" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
                     @endif
 
-                    @if (Auth::user()->hasRole('employee') || Auth::user()->can('sign-documents'))
+                    @if (Auth::user()->can('sign-documents'))
                         <x-dropdown-wrapper width="content" name="Persetujuan Dokumen">
                             <x-dropdown-link :href="route('documents.loans.index')">
                                 Dokumen Peminjaman Aset
@@ -35,6 +35,21 @@
                                 Dokumen Barang Keluar
                             </x-dropdown-link>
                         </x-dropdown-wrapper>
+                    @endif
+
+                    @if (Auth::user()->hasRole('employee') || Auth::user()->can('monitoring'))
+                        <x-nav-link class="hidden md:flex" :href="route('monitoring.assets.index')" :active="request()->routeIs('monitoring.assets.index')">
+                            {{ __('Monitoring Aset') }}
+                        </x-nav-link>
+                        <x-nav-link class="hidden md:flex" :href="route('monitoring.loanAssets.index')" :active="request()->routeIs('monitoring.loanAssets.index')">
+                            {{ __('Monitoring Aset Terpinjam') }}
+                        </x-nav-link>
+                        <x-nav-link class="hidden md:flex" :href="route('monitoring.procurements.index')" :active="request()->routeIs('monitoring.procurements.index')">
+                            {{ __('Monitoring Pengadaan') }}
+                        </x-nav-link>
+                        <x-nav-link class="hidden md:flex" :href="route('monitoring.permits.index')" :active="request()->routeIs('monitoring.permits.index')">
+                            {{ __('Monitoring Perizinan') }}
+                        </x-nav-link>
                     @endif
 
                     @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-assets'))
@@ -81,7 +96,7 @@
                         </x-dropdown-wrapper>
                     @endif
 
-                    @if (!Auth::user()->hasRole('super-admin'))
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('view-histories'))
                         <x-dropdown-wrapper name="Riwayat Aset">
                             <x-dropdown-link :href="route('admin.loans.index')">
                                 Riwayat Peminjaman

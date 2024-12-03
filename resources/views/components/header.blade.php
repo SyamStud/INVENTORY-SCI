@@ -162,22 +162,22 @@
         .table th:first-child {
             background-color: #31363F;
             text-align: center;
-            border-top-left-radius: 8px;
+            /* border-top-left-radius: 8px; */
         }
 
         .table th:last-child {
             background-color: #31363F;
             text-align: center;
-            border-top-right-radius: 8px;
+            /* border-top-right-radius: 8px; */
         }
-
+/* 
         .table tr:last-child td:first-child {
             border-bottom-left-radius: 8px;
         }
 
         .table tr:last-child td:last-child {
             border-bottom-right-radius: 8px;
-        }
+        } */
 
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             color: #ffffff !important;
@@ -263,6 +263,25 @@
             outline: none !important;
         }
 
+        .dt-button.buttons-excel.buttons-html5 {
+            background-color: #00712D !important;
+            border-radius: 0.375rem !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            border: 1px solid transparent !important;
+            padding: 0.5rem 1rem !important;
+            box-sizing: border-box !important;
+            background: none;
+            transition: background-color 0.2s ease, color 0.2s ease !important;
+        }
+
+        .dt-button.buttons-excel.buttons-html5:hover {
+            background-color: #00712D !important;
+            color: #ffffff !important;
+            border: 1px solid transparent !important;
+            transform: none !important;
+            outline: none !important;
+        }
 
         .dtr-data {
             /* display: flex; */
@@ -299,19 +318,15 @@
         /* Membuat wrapper tabel dapat menggulir horizontal, tetapi tidak untuk filter, pencarian, dan pagination */
         #exam_wrapper {
             width: 100%;
-            overflow: hidden;
-            /* Menghindari scroll di wrapper */
+            /* overflow: auto; */
         }
 
         /* Hanya tabel yang dapat di-scroll horizontal */
         #exam {
             width: 100%;
             overflow-x: auto;
-            /* Scroll horizontal hanya untuk tabel */
             display: block;
-            /* Pastikan tabel bisa memiliki scroll horizontal */
             table-layout: fixed;
-            /* Menghindari kolom meluber */
         }
 
         /* Mengatur posisi filter dan pagination agar tetap di tempat */
@@ -320,7 +335,6 @@
         .dataTables_paginate {
             position: relative;
             z-index: 10;
-            /* Agar tetap di atas tabel */
         }
 
         /* Menambahkan padding atau margin pada tabel untuk memberi ruang pada elemen kontrol */

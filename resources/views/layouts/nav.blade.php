@@ -18,11 +18,11 @@
                     </a>
 
                     <x-nav-link :href="route('inbounds.index')" :active="request()->routeIs('inbounds.index')">
-                        {{ __('Barang Masuk') }}
+                        {{ __('Penerimaan Barang') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('outbounds.index')" :active="request()->routeIs('outbounds.index')">
-                        {{ __('Barang Keluar') }}
+                        {{ __('Pengeluaran Barang') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.index')">

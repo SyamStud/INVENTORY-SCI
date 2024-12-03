@@ -6,7 +6,9 @@
         </h2>
     </x-slot>
 
-    <main class="px-10 mt-10">
+    <main class="px-10 mt-10 relative">
+        <x-spinner></x-spinner>
+
         <button class="flex items-center gap-1 px-4 py-2 bg-green-700 rounded-md text-white font-medium text-sm"
             x-data="" x-on:click.prevent="$dispatch('open-modal', 'add-procurement')">
             <img class="w-6" src="https://img.icons8.com/?size=100&id=oqWjYJSQSZAj&format=png&color=FFFFFF"
@@ -275,13 +277,28 @@
 
 
         let dataTable;
+        let isInitialLoad = true;
 
         $(function() {
             dataTable = $('#exam').DataTable({
                     processing: true,
                     serverSide: true,
                     responsive: true,
-                    ajax: "{{ route('procurements.data') }}",
+                    ajax: {
+                        url: "{{ route('procurements.data') }}",
+                        beforeSend: function() {
+                            // Tampilkan spinner hanya saat initial load
+                            if (isInitialLoad) {
+                                $('#loading-spinner').show();
+                            }
+                        },
+                        complete: function() {
+                            // Sembunyikan spinner
+                            $('#loading-spinner').hide();
+                            // Set isInitialLoad menjadi false setelah load pertama
+                            isInitialLoad = false;
+                        }
+                    },
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',

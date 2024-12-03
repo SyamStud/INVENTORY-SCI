@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Loan;
 use App\Models\LoanAsset;
-use App\Models\ReturnAsset;
 use Illuminate\Http\Request;
+use App\Services\GotenbergService;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\Validator;
 
 class ReturnAssetController extends Controller
 {
+    protected $gotenbergService;
+
+    public function __construct(GotenbergService $gotenbergService)
+    {
+        $this->gotenbergService = $gotenbergService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -54,6 +62,10 @@ class ReturnAssetController extends Controller
                 'return_check' => $asset['return_check'],
                 'notes' => $asset['notes']
             ]);
+
+            $loanAsset->asset->update([
+                'availability' => 'ready'
+            ]);
         }
 
         $loanAsset = LoanAsset::find($request->assets[0]['loan_asset_id']);
@@ -66,7 +78,8 @@ class ReturnAssetController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data berhasil disimpan',
-            'loan_id' => $loanAsset->loan->id
+            'loan_id' => $loanAsset->loan->id,
+            'loan_number' => $loanAsset->loan->loan_number,
         ]);
     }
 
@@ -198,11 +211,16 @@ class ReturnAssetController extends Controller
             $tempDocx = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '-RETURNED.docx');
             $phpWord->saveAs($tempDocx);
 
-            $pythonScriptPath = base_path('scripts/word2pdf.py');
+            $inputPath = $docxPath;
+            $outputPath = $pdfPath;
 
-            // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
-            $command = "python $pythonScriptPath $docxPath $pdfPath";
-            exec($command);
+            try {
+                $this->gotenbergService->convertDocxToPdf($inputPath, $outputPath);
+            } catch (Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
 
             // Baca file PDF
             $content = file_get_contents($pdfPath);

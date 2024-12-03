@@ -7,12 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Inbound extends Model
 {
     protected $fillable = [
-        'inbound_number',
-        'received_from',
+        'po_number',
+        'bpg_number',
         'order_note_number',
-        'contract_note_number',
-        'delivery_note_number',
-        'date_received',
+        'date',
         'received_by',
         'total_cost',
         'branch_id',

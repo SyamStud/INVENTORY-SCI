@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
+use App\Models\LoanTemp;
 use App\Models\Loan;
 use App\Models\Asset;
 use App\Models\Employee;
-use App\Models\LoanTemp;
 use App\Models\LoanAsset;
-use Illuminate\Http\Request;
 use App\Models\LoanAssetTemp;
-use App\Services\GotenbergService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -19,13 +17,6 @@ use Illuminate\Support\Facades\Validator;
 
 class LoanTempController extends Controller
 {
-    protected $gotenbergService;
-
-    public function __construct(GotenbergService $gotenbergService)
-    {
-        $this->gotenbergService = $gotenbergService;
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +26,7 @@ class LoanTempController extends Controller
             ->where('user_id', Auth::user()->id)
             ->first();
 
-        $assets = Asset::where('branch_id', Auth::user()->branch_id)->where('availability', 'ready')->get();
+        $assets = Asset::where('branch_id', Auth::user()->branch_id)->get();
         $employees = Employee::where('branch_id', Auth::user()->branch_id)->get();
 
         return view('pages.main.loan', [
@@ -105,14 +96,12 @@ class LoanTempController extends Controller
         $loan->assets()->create([
             'loan_temp_id' => $loan->id,
             'asset_id' => $request->asset_id,
+            // 'quantity' => $request->quantity,
             'duration' => $request->duration,
             'notes' => $request->notes ?? null,
             'loan_check' => $request->loan_check,
             'branch_id' => Auth::user()->branch_id,
         ]);
-
-        $asset = Asset::find($request->asset_id);
-        $asset->update(['availability' => 'on_loan']);
 
         return response()->json([
             'status' => 'success',
@@ -165,27 +154,15 @@ class LoanTempController extends Controller
      */
     public function destroy($id)
     {
-        $loanAsset = LoanAssetTemp::where('id', $id)
+        $loanAssetLoanAsset = LoanAssetTemp::where('id', $id)
             ->where('branch_id', Auth::user()->branch_id)
             ->first();
 
-        $asset = Asset::with('brand')->find($loanAsset->asset_id);
-
-        $assetData = [
-            'asset_id' => $asset->id,
-            'asset_name' => $asset->name,
-            'brand_name' => $asset->brand->name,
-            'serial_number' => $asset->serial_number
-        ];
-
-        $asset->update(['availability' => 'ready']);
-
-        $loanAsset->delete();
+        $loanAssetLoanAsset->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Barang berhasil dihapus',
-            'loan_asset' => $assetData
         ]);
     }
 
@@ -195,25 +172,11 @@ class LoanTempController extends Controller
             ->where('branch_id', Auth::user()->branch_id)
             ->first();
 
-        $loan->assets->each(function ($asset) {
-            $asset->asset->update(['availability' => 'ready']);
-        });
-
-        $assetsData = $loan->assets->map(function ($asset) {
-            return [
-                'asset_id' => $asset->asset->id,
-                'asset_name' => $asset->asset->name,
-                'brand_name' => $asset->asset->brand->name,
-                'serial_number' => $asset->asset->serial_number
-            ];
-        });
-
         $loan->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Penerimaan berhasil dibatalkan',
-            'assets' => $assetsData
         ]);
     }
 
@@ -269,6 +232,7 @@ class LoanTempController extends Controller
             'status' => 'success',
             'message' => 'Penerimaan berhasil dikonfirmasi',
             'loan_id' => $loan->id,
+            'document' => $document['pdf']
         ]);
     }
 
@@ -420,133 +384,153 @@ class LoanTempController extends Controller
         }
     }
 
-    public function saveDocument($id, $type = 'save')
+    public function saveDocument($id, $preview = false)
     {
-        /* TYPE [SAVE, PREVIEW, DOWNLOAD]
-            SAVE => GENERATE FILE UNTUK PREVIEW HALAMAN SIGN 
-            PREVIEW => PREVIEW DOKUMEN DI RIWAYAT PENGELUARAN (LIHAT DOKUMEN)
-            DOWNLOAD => UNTUK UNDUH DOKUMEN DI HALAMAN SIGN */
-
         try {
             $loan = Loan::find($id);
+
+            $phpWord = new TemplateProcessor('template_loan.docx');
+
+            // Set template values
+            $phpWord->setValue('customer_name', $loan->customer_name);
+            $phpWord->setValue('loan_number', $loan->loan_number);
+            $phpWord->setValue('operation_head', $loan->operationHead->name);
+            $phpWord->setValue('npp_head', $loan->operationHead->npp);
+            $phpWord->setValue('general_division', $loan->generalDivision->name);
+            $phpWord->setValue('npp_general', $loan->generalDivision->npp);
+            $phpWord->setValue('loan_officer', $loan->loanOfficer->name);
+            $phpWord->setValue('npp_officer', $loan->loanOfficer->npp);
+
+            if ($loan->signatures->count() >= 3) {
+                $signatures = [
+                    'operation_head' => $loan->signatures->where('position', 'KEPALA BIDANG OPERASI')->first()->signature_path,
+                    'general_division' => $loan->signatures->where('position', 'BAGIAN UMUM')->first()->signature_path,
+                    'loan_officer' => $loan->signatures->where('position', 'PETUGAS PINJAMAN')->first()->signature_path,
+                ];
+
+                $phpWord->setImageValue('sign_operation_head', [
+                    'path' => storage_path('app/public/' . $signatures['operation_head']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+                $phpWord->setImageValue('sign_general_division', [
+                    'path' => storage_path('app/public/' . $signatures['general_division']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+                $phpWord->setImageValue('sign_loan_officer', [
+                    'path' => storage_path('app/public/' . $signatures['loan_officer']),
+                    'width' => 100,
+                    'height' => 50,
+                    'ratio' => false,
+                ]);
+            }
+
+            $photos = json_decode($loan->photos, true);
+
+            foreach ($photos as $index => $photo) {
+                // Get image dimensions
+                $imageInfo = getimagesize(storage_path('app/public/' . $photo));
+                $originalWidth = $imageInfo[0];
+                $originalHeight = $imageInfo[1];
+                $originalRatio = $originalWidth / $originalHeight;
+
+                // Target width tetap 345
+                $targetWidth = 345;
+                $targetHeight = 613;
+
+                // Jika rasio lebih lebar (seperti 16:9)
+                if ($originalRatio > 1) {
+                    $phpWord->setImageValue('photo_' . ($index + 1), [
+                        'path' => storage_path('app/public/' . $photo),
+                        'width' => 345,
+                        'height' => 192,
+                        'ratio' => false,
+                    ]);
+                } else {
+                    // Untuk gambar portrait (9:16), gunakan setting normal
+                    $phpWord->setImageValue('photo_' . ($index + 1), [
+                        'path' => storage_path('app/public/' . $photo),
+                        'width' => $targetWidth,
+                        'height' => $targetHeight,
+                        'ratio' => true
+                    ]);
+                }
+            }
+
+            // Process assets
+            $values = [];
+            foreach ($loan->assets as $index => $loanAsset) {
+                $values[$index] = [
+                    'no' => $index + 1,
+                    'tag_number' => $loanAsset->asset->tag_number,
+                    'asset_name' => $loanAsset->asset->name,
+                    'brand' => $loanAsset->asset->brand->name,
+                    'serial_number' => $loanAsset->asset->serial_number,
+                    'quantity' => $loanAsset->quantity,
+                    'duration' => $loanAsset->duration,
+                    'notes' => $loanAsset->notes,
+                    'loan_check' => $loanAsset->loan_check,
+                    'return_check' => $loanAsset->return_check ?? '-',
+                ];
+            }
+
+            $phpWord->cloneRowAndSetValues('no', $values);
+
+            // Output ke browser
+            $tempDocx = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.docx');
+            $phpWord->saveAs($tempDocx);
 
             $docxPath = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.docx');
             $pdfPath = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.pdf');
 
-            // GENERATE DOCX FROM TEMPLATE AND CONVERT TO PDF
-            if ($type == 'save' || ($type == 'preview' && !file_exists($pdfPath)) || ($type == 'download' && !file_exists($pdfPath))) {
-                $phpWord = new TemplateProcessor('template_loan.docx');
-
-                // Set template values
-                $phpWord->setValue('customer_name', $loan->customer_name);
-                $phpWord->setValue('loan_number', $loan->loan_number);
-                $phpWord->setValue('operation_head', $loan->operationHead->name);
-                $phpWord->setValue('npp_head', $loan->operationHead->npp);
-                $phpWord->setValue('general_division', $loan->generalDivision->name);
-                $phpWord->setValue('npp_general', $loan->generalDivision->npp);
-                $phpWord->setValue('loan_officer', $loan->loanOfficer->name);
-                $phpWord->setValue('npp_officer', $loan->loanOfficer->npp);
-
-                if ($loan->signatures->count() >= 3) {
-                    $signatures = [
-                        'operation_head' => $loan->signatures->where('position', 'KEPALA BIDANG OPERASI')->first()->signature_path,
-                        'general_division' => $loan->signatures->where('position', 'BAGIAN UMUM')->first()->signature_path,
-                        'loan_officer' => $loan->signatures->where('position', 'PETUGAS PINJAMAN')->first()->signature_path,
-                    ];
-
-                    $phpWord->setImageValue('sign_operation_head', [
-                        'path' => storage_path('app/public/' . $signatures['operation_head']),
-                        'width' => 100,
-                        'height' => 50,
-                        'ratio' => false,
-                    ]);
-                    $phpWord->setImageValue('sign_general_division', [
-                        'path' => storage_path('app/public/' . $signatures['general_division']),
-                        'width' => 100,
-                        'height' => 50,
-                        'ratio' => false,
-                    ]);
-                    $phpWord->setImageValue('sign_loan_officer', [
-                        'path' => storage_path('app/public/' . $signatures['loan_officer']),
-                        'width' => 100,
-                        'height' => 50,
-                        'ratio' => false,
-                    ]);
-                }
-
-                $photos = json_decode($loan->photos, true);
-
-                foreach ($photos as $index => $photo) {
-                    // Get image dimensions
-                    $imageInfo = getimagesize(storage_path('app/public/' . $photo));
-                    $originalWidth = $imageInfo[0];
-                    $originalHeight = $imageInfo[1];
-                    $originalRatio = $originalWidth / $originalHeight;
-
-                    // Target width tetap 345
-                    $targetWidth = 345;
-                    $targetHeight = 613;
-
-                    // Jika rasio lebih lebar (seperti 16:9)
-                    if ($originalRatio > 1) {
-                        $phpWord->setImageValue('photo_' . ($index + 1), [
-                            'path' => storage_path('app/public/' . $photo),
-                            'width' => 345,
-                            'height' => 192,
-                            'ratio' => false,
-                        ]);
-                    } else {
-                        // Untuk gambar portrait (9:16), gunakan setting normal
-                        $phpWord->setImageValue('photo_' . ($index + 1), [
-                            'path' => storage_path('app/public/' . $photo),
-                            'width' => $targetWidth,
-                            'height' => $targetHeight,
-                            'ratio' => true
-                        ]);
-                    }
-                }
-
-                // Process assets
-                $values = [];
-                foreach ($loan->assets as $index => $loanAsset) {
-                    $values[$index] = [
-                        'no' => $index + 1,
-                        'tag_number' => $loanAsset->asset->tag_number,
-                        'asset_name' => $loanAsset->asset->name,
-                        'brand' => $loanAsset->asset->brand->name,
-                        'serial_number' => $loanAsset->asset->serial_number,
-                        'duration' => $loanAsset->duration,
-                        'notes' => $loanAsset->notes,
-                        'loan_check' => $loanAsset->loan_check,
-                        'return_check' => $loanAsset->return_check ?? '-',
-                    ];
-                }
-
-                $phpWord->cloneRowAndSetValues('no', $values);
-
-                // Output ke browser
-                $tempDocx = storage_path('app/public/documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.docx');
-                $phpWord->saveAs($tempDocx);
-
-                $inputPath = $docxPath;
-                $outputPath = $pdfPath;
-
-                try {
-                    $this->gotenbergService->convertDocxToPdf($inputPath, $outputPath);
-                } catch (Exception $e) {
-                    return response()->json([
-                        'error' => $e->getMessage(),
-                    ], 500);
-                }
-
-                $loan->update(['document_path' => 'documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.pdf']);
-
-                unlink($docxPath);
-            }
-
-            if ($type == 'preview' || $type == 'download') {
+            if (file_exists($pdfPath)) {
                 $content = file_get_contents($pdfPath);
 
+                if ($preview) {
+                    return response($content, 200, [
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'inline; filename="' . $loan->loan_number . '.pdf"',
+                        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                        'Pragma' => 'no-cache',
+                        'Expires' => '0',
+                    ]);
+                } else {
+                    return [
+                        'status' => 'success',
+                        'message' => 'PDF berhasil dibuat',
+                        'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
+                    ];
+                }
+            }
+
+            // $pythonScriptPath = base_path('scripts/word2pdf.py');
+
+            // // Jalankan perintah untuk mengonversi DOCX ke PDF menggunakan Python
+            // $command = "python $pythonScriptPath $docxPath $pdfPath";
+            // exec($command);
+
+            $libreOfficePath = "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
+            if (!file_exists($libreOfficePath)) {
+                $errorMessage = "LibreOffice not found at the expected location: " . $libreOfficePath;
+                error_log($errorMessage);
+                return response($errorMessage, 500);
+            }
+
+            $command = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe" --headless --convert-to pdf --outdir "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\loans') . '" "' . escapeshellarg('C:\\Users\\LENOVO\\Documents\\Project\\INVENTORY-SCI\\storage\\app\\public\\documents\\loans\\' . str_replace('/', '-', $loan->loan_number) . '.docx') . '"';
+            exec($command, $output, $returnCode);
+
+            // Baca file PDF
+            $content = file_get_contents($pdfPath);
+
+            // Cleanup temp files
+            unlink($tempDocx);
+
+            $loan->update(['document_path' => 'documents/loans/' . str_replace('/', '-', $loan->loan_number) . '.pdf']);
+
+            if ($preview) {
                 return response($content, 200, [
                     'Content-Type' => 'application/pdf',
                     'Content-Disposition' => 'inline; filename="' . $loan->loan_number . '.pdf"',
@@ -554,12 +538,13 @@ class LoanTempController extends Controller
                     'Pragma' => 'no-cache',
                     'Expires' => '0',
                 ]);
+            } else {
+                return [
+                    'status' => 'success',
+                    'message' => 'PDF berhasil dibuat',
+                    'pdf' => str_replace(storage_path('app/public/'), '', $pdfPath),
+                ];
             }
-
-            return [
-                'status' => 'success',
-                'message' => 'DOCX berhasil dibuat',
-            ];
         } catch (\Exception $e) {
             log::info($e->getMessage());
         }

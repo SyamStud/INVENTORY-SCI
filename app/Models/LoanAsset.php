@@ -9,7 +9,7 @@ class LoanAsset extends Model
     protected $fillable = [
         'loan_id',
         'asset_id',
-        'quantity',
+        // 'quantity',
         'duration',
         'loan_check',
         'return_check',

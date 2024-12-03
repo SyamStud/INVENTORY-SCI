@@ -2,7 +2,7 @@
     <x-slot name="nav">admin</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar pengembalian
+            Bukti pengembalian
         </h2>
     </x-slot>
 
@@ -63,11 +63,6 @@
                             orderable: false
                         },
                         {
-                            data: 'quantity',
-                            name: 'quantity',
-                            orderable: false,
-                        },
-                        {
                             data: 'return_check',
                             name: 'return_check',
                             orderable: false
@@ -88,7 +83,6 @@
                     <tr class="text-white">
                         <th class="w-10">No</th>
                         <th>Nama Asset</th>
-                        <th>Jumlah</th>
                         <th>Kondisi Pengembalian</th>
                         <th>Catatan</th>
                     </tr>

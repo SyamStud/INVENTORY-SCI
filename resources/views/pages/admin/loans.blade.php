@@ -63,11 +63,6 @@
                             orderable: false
                         },
                         {
-                            data: 'quantity',
-                            name: 'quantity',
-                            orderable: false,
-                        },
-                        {
                             data: 'duration',
                             name: 'duration',
                             orderable: false
@@ -88,7 +83,7 @@
                     <tr class="text-white">
                         <th class="w-10">No</th>
                         <th>Nama Asset</th>
-                        <th>Jumlah</th>
+                        {{-- <th>Jumlah</th> --}}
                         <th>Lama Peminjaman</th>
                         <th>Catatan</th>
                     </tr>

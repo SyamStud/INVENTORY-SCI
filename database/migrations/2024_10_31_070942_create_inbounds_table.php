@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('inbounds', function (Blueprint $table) {
             $table->id();
-            $table->string('inbound_number');
-            $table->string('received_from');
+            $table->string('po_number');
+            $table->string('bpg_number');
             $table->string('order_note_number');
-            $table->string('contract_note_number')->nullable();
-            $table->string('delivery_note_number')->nullable();
-            $table->date('date_received');
+            $table->date('date');
             $table->foreignId('received_by')->nullable()->constrained('employees');
             $table->double('total_cost');
             $table->foreignId('branch_id')->constrained('branch_offices');

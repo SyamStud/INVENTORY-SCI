@@ -28,7 +28,8 @@ class Asset extends Model
         'correction_factor',
         'significance',
         'size',
-        'procurement'
+        'procurement',
+        'availability'
     ];
 
     public function branchOffice()

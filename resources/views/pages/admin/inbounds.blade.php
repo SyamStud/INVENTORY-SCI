@@ -12,15 +12,11 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nomor Dokumen</th>
-                        <th>Diterima Dari</th>
+                        <th>Nomor PO</th>
+                        <th>Nomor BPG</th>
                         <th>No/Tgl Surat Pesanan</th>
-                        <th>No/Tgl Surat Kontrak</th>
-                        <th>No/Tgl Surat Pengantar</th>
-                        <th>Penyerah</th>
                         <th class="w-20">Tanggal</th>
                         <th class="w-20">Detail Aset</th>
-                        {{-- <th class="w-20">Status</th> --}}
                     </tr>
                 </thead>
             </table>
@@ -78,6 +74,13 @@
                             orderable: false,
                         },
                     ],
+                    columnDefs: [{
+                            targets: [0, 2, 3, 4],
+                            createdCell: function(td, cellData, rowData, row, col) {
+                                $(td).addClass('text-center');
+                            }
+                        },
+                    ],
                 });
             }
         }" @set-item.window="setItem($event.detail)"
@@ -113,33 +116,18 @@
                             searchable: false
                         },
                         {
-                            data: 'inbound_number',
-                            name: 'inbound_number',
+                            data: 'po_number',
+                            name: 'po_number',
                             orderable: false
                         },
                         {
-                            data: 'received_from',
-                            name: 'received_from',
+                            data: 'bpg_number',
+                            name: 'bpg_number',
                             orderable: false
                         },
                         {
                             data: 'order_note_number',
                             name: 'order_note_number',
-                            orderable: false
-                        },
-                        {
-                            data: 'contract_note_number',
-                            name: 'contract_note_number',
-                            orderable: false
-                        },
-                        {
-                            data: 'delivery_note_number',
-                            name: 'delivery_note_number',
-                            orderable: false
-                        },
-                        {
-                            data: 'received_from',
-                            name: 'received_from',
                             orderable: false
                         },
                         {
@@ -153,21 +141,15 @@
                             orderable: false,
                             searchable: false
                         },
-                        // {
-                        //     data: 'status',
-                        //     name: 'status',
-                        //     orderable: false,
-                        //     searchable: false
-                        // },
                     ],
                     columnDefs: [{
-                            targets: [0, 6],
+                            targets: 0,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('text-center');
                             }
                         },
                         {
-                            targets: 8,
+                            targets: 5,
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('flex justify-center w-30');
                             }

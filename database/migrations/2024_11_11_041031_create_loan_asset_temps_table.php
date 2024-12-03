@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('loan_temp_id')->constrained()->onDelete('cascade');
             $table->foreignId('asset_id')->constrained();
-            $table->foreignId('quantity');
+            // $table->foreignId('quantity');
             $table->integer('duration');
             $table->string('loan_check')->nullable();
             $table->string('return_check')->nullable();

@@ -120,12 +120,12 @@ class InboundController extends Controller
                 return $inboundItem->quantity . ' ' . $inboundItem->item->unit->name;
             })
             ->addColumn('cost', function ($inboundItem) {
-                return 'Rp' . number_format($inboundItem->cost, 0, ',', '.');
+                return 'Rp ' . number_format($inboundItem->cost, 0, ',', '.');
             })
             ->addColumn('total_cost', function ($inboundItem) {
                 $total = $inboundItem->cost * $inboundItem->quantity;
 
-                return 'Rp' . number_format($total, 0, ',', '.');
+                return 'Rp ' . number_format($total, 0, ',', '.');
             })
             ->make(true);
     }

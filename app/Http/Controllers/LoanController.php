@@ -121,15 +121,15 @@ class LoanController extends Controller
 
                     if (!empty($missingSignatures)) {
                         // Tampilkan status menunggu tanda tangan
-                        $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
+                        $statusHtml .= "<span style='background-color: #ca8a04' class='text-sm px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
 
                         // Tampilkan posisi yang belum tanda tangan
                         foreach ($missingSignatures as $position) {
-                            $statusHtml .= "<span style='background-color: #dc2626' class='hidden md:flex px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
+                            $statusHtml .= "<span style='background-color: #dc2626' class='hidden md:flex text-sm px-2 py-1 text-white bg-red-600 rounded-md'>{$position}</span>";
                         }
                     } else {
                         // Jika semua posisi sudah tanda tangan
-                        $statusHtml .= "<span style='background-color: #16a34a' class='px-2 py-1 text-white bg-green-600 rounded-md'>Sudah Ditandatangani</span>";
+                        $statusHtml .= "<span style='background-color: #16a34a' class='text-sm px-2 py-1 text-white bg-green-600 rounded-md'>Sudah Ditandatangani</span>";
                     }
 
                     $statusHtml .= "</div>";
@@ -137,11 +137,11 @@ class LoanController extends Controller
                     return $statusHtml;
                 } else if ($loan->status == 'on_loan') {
                     return "<div class='flex items-center gap-2'>
-                                <span style='background-color: #133E87' class='px-3 py-1 text-white bg-blue-700 rounded-md font-medium'>Dalam Peminjaman</span>
+                                <span style='background-color: #133E87' class='text-sm px-3 py-1 text-white bg-blue-700 rounded-md font-medium'>Dalam Peminjaman</span>
                             </div>";
                 } else {
                     return "<div class='flex items-center gap-2'>
-                                <span style='background-color: #15803d' class='px-2 py-1 text-white bg-green-700 rounded-md'>Telah Dikembalikan</span>
+                                <span style='background-color: #15803d' class='text-sm px-2 py-1 text-white bg-green-700 rounded-md'>Telah Dikembalikan</span>
                             </div>";
                 }
             })
@@ -177,7 +177,7 @@ class LoanController extends Controller
                         $statusHtml .= "<span style='background-color: #ca8a04' class='px-2 py-1 text-white bg-yellow-600 rounded-md'>Menunggu Tanda Tangan</span>";
                     } else {
                         // Jika semua posisi sudah tanda tangan
-                        $statusHtml .= "<a href='/documents/loans/download/{$loans->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                        $statusHtml .= "<a href='/documents/loans/download/{$loans->id}/preview' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                                             <img class='w-5' src='https://img.icons8.com/?size=100&id=9ZFMqzgXThYz&format=png&color=FFFFFF' alt=''>
                                             Lihat Dokumen
                                         </a>";
@@ -188,7 +188,7 @@ class LoanController extends Controller
                     return $statusHtml;
                 }
 
-                return "<a href='/documents/loans/download/{$loans->id}/true' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
+                return "<a href='/documents/loans/download/{$loans->id}/preview' target='_blank' class='w-max flex items-center gap-2 px-3 py-1 text-white rounded-md text-sm font-medium' style='background-color: #133E87;'>
                     <img class='w-5' src='https://img.icons8.com/?size=100&id=VNxIqSP5pHwD&format=png&color=FFFFFF' alt=''>
                     Lihat Dokumen
                 </a>";

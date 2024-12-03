@@ -243,29 +243,6 @@ class DocumentSigningController extends Controller
         }
     }
 
-    // public function OutboundPreview($id)
-    // {
-    //     try {
-    //         $outbound = Outbound::find($id);
-
-    //         $path = storage_path('app/public/' . $outbound->document_path);
-
-    //         $content = file_get_contents($path);
-
-    //         return response($content);
-
-    //         // return response($content, 200, [
-    //         //     'Content-Type' => 'application/pdf',
-    //         //     'Content-Disposition' => 'inline; filename="' . $outbound->outbound_number . '.pdf"',
-    //         //     'Cache-Control' => 'no-cache, no-store, must-revalidate',
-    //         //     'Pragma' => 'no-cache',
-    //         //     'Expires' => '0',
-    //         // ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
-
     public function getPendingLoans()
     {
         $loans = Loan::where('status', 'pending')
