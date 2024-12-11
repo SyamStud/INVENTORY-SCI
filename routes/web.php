@@ -164,10 +164,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('monitoring')->group(function () {
         Route::get('/procurements', [MonitoringController::class, 'procurementIndex'])->name('monitoring.procurements.index');
         Route::get('/procurements/getProcurements', [MonitoringController::class, 'procurementData'])->name('monitoring.procurements.data');
-        
+
         Route::get('/permits', [MonitoringController::class, 'permitIndex'])->name('monitoring.permits.index');
         Route::get('/permits/getPermits', [MonitoringController::class, 'permitData'])->name('monitoring.permits.data');
-        
+
         Route::get('/assets', [MonitoringController::class, 'assetIndex'])->name('monitoring.assets.index');
         Route::get('/assets/getAssets', [MonitoringController::class, 'assetData'])->name('monitoring.assets.data');
 

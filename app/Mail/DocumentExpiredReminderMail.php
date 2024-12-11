@@ -13,11 +13,11 @@ class DocumentExpiredReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $record;
+    public $expiredDocument;
 
-    public function __construct($record)
+    public function __construct($expiredDocument)
     {
-        $this->record = $record;
+        $this->expiredDocument = $expiredDocument;
     }
 
     public function build()
@@ -25,7 +25,7 @@ class DocumentExpiredReminderMail extends Mailable
         return $this->subject('Notifikasi Tanggal Terlewati')
             ->view('emails.DocumentReminder')
             ->with([
-                'record' => $this->record
+                'expiredDocument' => $this->expiredDocument
             ]);
     }
 }

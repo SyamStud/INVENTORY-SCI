@@ -84,7 +84,7 @@
                 <th>Nama Dokumen</th>
                 <th>Nomor Dokumen</th>
                 <th>Tanggal Expired</th>
-                <th>Status</th>
+                {{-- <th>Status</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -93,17 +93,17 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $doc->name }}</td>
                     <td>{{ $doc->document_number }}</td>
-                    <td>{{ $doc->expired_at->format('d F Y') }}</td>
-                    <td class="{{ $doc->is_expired ? 'expired' : 'soon-expire' }}">
+                    <td>{{ $doc->due_date->format('d F Y') }}</td>
+                    {{-- <td class="{{ $doc->is_expired ? 'expired' : 'soon-expire' }}">
                         {{ $doc->is_expired ? 'Expired' : 'Akan Expired' }}
-                    </td>
+                    </td> --}}
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <div style="text-align: center;">
-        <a href="{{ route('documents.index') }}" class="btn">Kelola Dokumen Perizinan</a>
+        <a href="{{ route('permits.index') }}" class="btn">Kelola Dokumen Perizinan</a>
     </div>
 
     <div class="footer">

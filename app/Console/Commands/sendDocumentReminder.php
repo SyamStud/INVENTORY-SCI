@@ -15,11 +15,11 @@ class sendDocumentReminder extends Command
 
     public function handle()
     {
-        $records = DB::table('permits')
+        $expiredDocuments = DB::table('permits')
             ->get();
 
-        foreach ($records as $record) {
-            $targetDate = Carbon::parse($record->due_date);
+        foreach ($expiredDocuments as $expiredDocument) {
+            $targetDate = Carbon::parse($expiredDocument->due_date);
             $today = Carbon::now();
 
             // Periksa jika tanggal hari ini melebihi tanggal target
@@ -27,7 +27,7 @@ class sendDocumentReminder extends Command
                 
                 // Kirim email
                 $tujuan = "";
-                Mail::to('syamchai.dev@gmail.com')->send(new DocumentExpiredReminderMail($record));
+                Mail::to('syamchai.dev@gmail.com')->send(new DocumentExpiredReminderMail($expiredDocument));
             }
         }
     }
