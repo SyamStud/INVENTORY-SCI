@@ -13,5 +13,7 @@ class Permit extends Model
         'due_date',
         'branch_id',
         'file',
+        'is_reminded',
+        'last_reminded_at'
     ];
 }

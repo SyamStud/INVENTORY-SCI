@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permits', function (Blueprint $table) {
+        Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('number');
-            $table->string('institution');
-            $table->date('due_date');
-            $table->string('file')->nullable();
+            $table->string('nopol');
+            $table->string('brand');
+            $table->date('stnk');
+            $table->date('kir');
             $table->foreignId('branch_id')->constrained('branch_offices');
-            $table->boolean('is_reminded')->default(false);
-            $table->date('last_reminded_at')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permits');
+        Schema::dropIfExists('vehicles');
     }
 };

@@ -1,9 +1,6 @@
 <?php
 
-use Dompdf\Dompdf;
-use App\Models\Inbound;
 use Illuminate\Http\Request;
-use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,18 +16,22 @@ use App\Http\Controllers\PermitController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\InboundController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LoanTempController;
 use App\Http\Controllers\OutboundController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeliveryInController;
+use App\Http\Controllers\DeliveryOutController;
+use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\InboundTempController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReturnAssetController;
 use App\Http\Controllers\OutboundTempController;
+use App\Http\Controllers\VehicleUsageController;
 use App\Http\Controllers\DocumentSigningController;
-use App\Http\Controllers\MonitoringController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -89,6 +90,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/users/getUsers', [UserController::class, 'getUsers'])->name('users.data')->middleware('role_or_permission:admin|manage-users');
         Route::resource('/users', UserController::class)->middleware('role_or_permission:admin|manage-users');
+
+        Route::get('/vehicles/getVehicles', [VehicleController::class, 'getVehicles'])->name('vehicles.data')->middleware('role_or_permission:admin');
+        Route::resource('/vehicles', VehicleController::class)->middleware('role_or_permission:admin');
 
         Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index')->middleware('role_or_permission:admin|manage-users');
         Route::put('/permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('role_or_permission:admin|manage-users');
@@ -227,6 +231,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/procurements/getProcurements', [ProcurementController::class, 'getProcurements'])->name('procurements.data')->middleware('role_or_permission:employee|admin|manage-inventories');
     Route::resource('/procurements', ProcurementController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
+
+    Route::get('/vehicle-usages/getVehicleUsages', [VehicleUsageController::class, 'getVehicleUsages'])->name('vehicleUsages.data')->middleware('role_or_permission:employee|admin|manage-inventories');
+    Route::resource('/vehicle-usages', VehicleUsageController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
+    
+    Route::get('/delivery-ins/getDeliveryIns', [DeliveryInController::class, 'getDeliveryIns'])->name('deliveryIns.data')->middleware('role_or_permission:employee|admin|manage-inventories');
+    Route::resource('/delivery-ins', DeliveryInController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
+    
+    Route::get('/delivery-outs/getDeliveryOuts', [DeliveryOutController::class, 'getDeliveryOuts'])->name('deliveryOuts.data')->middleware('role_or_permission:employee|admin|manage-inventories');
+    Route::resource('/delivery-outs', DeliveryOutController::class)->middleware('role_or_permission:employee|admin|manage-inventories');
 });
 
 require __DIR__ . '/auth.php';

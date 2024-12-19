@@ -112,12 +112,6 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="calibration_due_date" :value="__('Tanggal Berakhirnya Masa Kalibrasi')" />
-                        <x-text-input id="calibration_due_date" class="block mt-1 w-full" type="date"
-                            name="calibration_due_date" required autofocus />
-                    </div>
-
-                    <div class="mb-4">
                         <x-input-label for="calibration_institution" :value="__('Lembaga Kalibrasi')" />
                         <x-text-input id="calibration_institution" class="block mt-1 w-full" type="text"
                             name="calibration_institution" required autofocus />
@@ -257,19 +251,19 @@
                 </div>
 
                 <div class="mb-4">
+                    <x-input-label for="edit_tag_number" :value="__('Tag Number')" />
+                    <x-text-input id="edit_tag_number" class="block mt-1 w-full" type="text" name="tag_number"
+                        x-bind:value="asset?.tag_number" required autofocus />
+                </div>
+
+                <div class="mb-4">
                     <x-input-label for="edit_name" :value="__('Nama Aset')" />
                     <x-text-input id="edit_name" class="block mt-1 w-full" type="text" name="name" required
                         x-bind:value="asset?.name" autofocus />
                 </div>
 
-                <div class="mb-4">
-                    <x-input-label for="edit_serial_number" :value="__('Nomor Seri')" />
-                    <x-text-input id="edit_serial_number" class="block mt-1 w-full" type="text"
-                        name="serial_number" required x-bind:value="asset?.serial_number" autofocus />
-                </div>
-
                 <div class="mb-4 w-full">
-                    <x-input-label for="name" :value="__('Nama Aset')" />
+                    <x-input-label for="name" :value="__('Merek')" />
                     <select class="w-full select2" name="brand_id" x-data x-init="$nextTick(() => {
                         $('.select2').select2(); // Inisialisasi Select2
                         if (asset) {
@@ -285,6 +279,100 @@
                                 {{ $brand->name }}
                             </option>
                         @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_serial_number" :value="__('Nomor Seri')" />
+                    <x-text-input id="edit_serial_number" class="block mt-1 w-full" type="text"
+                        name="serial_number" required x-bind:value="asset?.serial_number" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_color" :value="__('Warna')" />
+                    <x-text-input id="edit_color" class="block mt-1 w-full" type="text" name="color" required
+                        x-bind:value="asset?.color" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_size" :value="__('Ukuran')" />
+                    <x-text-input id="edit_size" class="block mt-1 w-full" type="text" name="size" required
+                        x-bind:value="asset?.size" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_condition" :value="__('Kondisi Barang')" />
+                    <select name="condition"
+                        class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm"
+                        x-bind:value="asset?.condition">
+                        <option value="baik">Baik</option>
+                        <option value="rusak">Rusak</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_status" :value="__('Status Barang')" />
+                    <select name="status"
+                        class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm"
+                        x-bind:value="asset?.status">
+                        <option value="terpakai">Terpakai</option>
+                        <option value="tidak terpakai">Tidak Terpakai</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_calibration_number" :value="__('No. Sertifikasi Kalibrasi / Perizinan')" />
+                    <x-text-input id="edit_calibration_number" class="block mt-1 w-full" type="text"
+                        name="calibration_number" required x-bind:value="asset?.calibration_number" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_calibration_interval" :value="__('Interval Kalibrasi (Tahun)')" />
+                    <x-text-input id="edit_calibration_interval" class="block mt-1 w-full" type="number"
+                        name="calibration_interval" required x-bind:value="asset?.calibration_interval" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_calibration_start_date" :value="__('Tanggal Kalibrasi')" />
+                    <x-text-input id="edit_calibration_start_date" class="block mt-1 w-full" type="date"
+                        name="calibration_start_date" required x-bind:value="asset?.calibration_start_date" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_calibration_institution" :value="__('Lembaga Kalibrasi')" />
+                    <x-text-input id="edit_calibration_institution" class="block mt-1 w-full" type="text"
+                        name="calibration_institution" required x-bind:value="asset?.calibration_institution" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_calibration_type" :value="__('Jenis Kalibrasi')" />
+                    <select name="calibration_type"
+                        class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm"
+                        x-bind:value="asset?.calibration_type">
+                        <option value="internal">Internal</option>
+                        <option value="eksternal">Eksternal</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_range" :value="__('Range / Kapasitas')" />
+                    <x-text-input id="edit_range" class="block mt-1 w-full" type="text" name="range" required
+                        x-bind:value="asset?.range" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_correction_factor" :value="__('Faktor Koreksi')" />
+                    <x-text-input id="edit_correction_factor" class="block mt-1 w-full" type="text"
+                        name="correction_factor" required x-bind:value="asset?.correction_factor" autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="edit_significance" :value="__('Signifikan')" />
+                    <select name="significance"
+                        class="w-full block mt-1 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm"
+                        x-bind:value="asset?.significance">
+                        <option value="ya">Ya</option>
+                        <option value="tidak">Tidak</option>
                     </select>
                 </div>
 
@@ -519,7 +607,8 @@
 
                 if (lastVisibleColumnIndex != undefined) {
                     $('#exam tbody tr').each(function() {
-                        $(this).find('td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius', '0px');
+                        $(this).find('td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius',
+                            '0px');
                     });
                 }
 

@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permits', function (Blueprint $table) {
+        Schema::create('delivery_ins', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('number');
-            $table->string('institution');
-            $table->date('due_date');
-            $table->string('file')->nullable();
+            $table->date('date');
+            $table->string('sender');
+            $table->string('receiver');
+            $table->string('received_date');
+            $table->string('received_by');
+            $table->string('photo');
             $table->foreignId('branch_id')->constrained('branch_offices');
-            $table->boolean('is_reminded')->default(false);
-            $table->date('last_reminded_at')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permits');
+        Schema::dropIfExists('delivery_ins');
     }
 };

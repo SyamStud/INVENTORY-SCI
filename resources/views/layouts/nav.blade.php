@@ -40,6 +40,19 @@
                     <x-nav-link :href="route('procurements.index')" :active="request()->routeIs('procurements.index')">
                         {{ __('Monitoring Pengadaan') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('vehicle-usages.index')" :active="request()->routeIs('vehicle-usages.index')">
+                        {{ __('Monitoring Kendaraan') }}
+                    </x-nav-link>
+
+                    <x-dropdown-wrapper width="content" name="Surat / Paket">
+                        <x-dropdown-link :href="route('delivery-ins.index')">
+                            Surat / Paket Masuk
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('delivery-outs.index')">
+                            Surat / Paket Keluar
+                        </x-dropdown-link>
+                    </x-dropdown-wrapper>
                 </div>
             </div>
 

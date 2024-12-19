@@ -73,37 +73,31 @@
 
 <body>
     <div class="alert">
-        <h1>⚠️ Peringatan Dokumen Perizinan Expired</h1>
+        <h3>Peringatan Dokumen Perizinan Expired</h3>
         <p>Beberapa dokumen perizinan telah atau akan segera expired. Harap segera ditindaklanjuti.</p>
     </div>
 
     <table class="license-table">
         <thead>
             <tr>
-                <th>No</th>
                 <th>Nama Dokumen</th>
                 <th>Nomor Dokumen</th>
                 <th>Tanggal Expired</th>
-                {{-- <th>Status</th> --}}
             </tr>
         </thead>
         <tbody>
             @foreach ($expiredDocuments as $index => $doc)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
                     <td>{{ $doc->name }}</td>
                     <td>{{ $doc->document_number }}</td>
                     <td>{{ $doc->due_date->format('d F Y') }}</td>
-                    {{-- <td class="{{ $doc->is_expired ? 'expired' : 'soon-expire' }}">
-                        {{ $doc->is_expired ? 'Expired' : 'Akan Expired' }}
-                    </td> --}}
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <div style="text-align: center;">
-        <a href="{{ route('permits.index') }}" class="btn">Kelola Dokumen Perizinan</a>
+        <a href="http://10.1.39.180/permits" class="btn">Lihat Selengkapnya</a>
     </div>
 
     <div class="footer">

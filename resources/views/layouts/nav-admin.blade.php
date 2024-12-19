@@ -52,6 +52,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (Auth::user()->hasRole('admin'))
+                        <x-nav-link class="hidden md:flex" :href="route('vehicles.index')" :active="request()->routeIs('vehicles.index')">
+                            {{ __('Kendaraan') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-assets'))
                         <x-dropdown-wrapper name="Aset">
                             <x-dropdown-link :href="route('assets.index')">

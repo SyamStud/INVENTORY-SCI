@@ -1,0 +1,35 @@
+2024-12-18 14:41:25,432 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 14:41:27,220 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 14:41:28,606 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 14:41:31,073 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 14:41:34,413 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:02:51,739 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:02:53,072 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:02:54,302 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:02:56,525 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:02:59,739 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:18:07,560 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:18:08,829 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:18:10,068 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:18:12,299 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:18:15,502 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:18:58,011 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:18:59,261 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:19:00,468 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:19:02,696 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:19:05,922 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:20:32,726 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:20:33,973 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:20:35,177 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:20:37,420 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:20:40,643 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:26:08,211 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:26:09,502 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:26:10,722 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:26:12,944 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:26:16,157 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:35:08,824 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-12-18 15:35:10,077 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:35:11,296 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:35:13,556 WARN exited: set-timezone (exit status 0; not expected)
+2024-12-18 15:35:16,775 WARN exited: set-timezone (exit status 0; not expected)

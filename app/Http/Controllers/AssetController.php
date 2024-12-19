@@ -45,7 +45,6 @@ class AssetController extends Controller
             'calibration_number' => 'required',
             'calibration_interval' => 'required|integer',
             'calibration_start_date' => 'required|date',
-            'calibration_due_date' => 'required|date',
             'calibration_institution' => 'required',
             'calibration_type' => 'required',
             'range' => 'required',
@@ -76,7 +75,7 @@ class AssetController extends Controller
         $asset->calibration_number = $request->calibration_number;
         $asset->calibration_interval = $request->calibration_interval;
         $asset->calibration_start_date = $request->calibration_start_date;
-        $asset->calibration_due_date = $request->calibration_due_date;
+        $asset->calibration_due_date = Carbon::parse($request->calibration_start_date)->addYears((int) $request->calibration_interval);
         $asset->calibration_institution = $request->calibration_institution;
         $asset->calibration_type = $request->calibration_type;
         $asset->range = $request->range;
@@ -135,9 +134,22 @@ class AssetController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'inventory_number' => 'required',
+            'tag_number' => 'required',
             'name' => 'required',
-            'serial_number' => 'required',
             'brand_id' => 'required',
+            'serial_number' => 'required',
+            'color' => 'required',
+            'size' => 'required',
+            'condition' => 'required|in:baik,rusak',
+            'status' => 'required|in:terpakai,tidak terpakai',
+            'calibration_number' => 'required',
+            'calibration_interval' => 'required|integer',
+            'calibration_start_date' => 'required|date',
+            'calibration_institution' => 'required',
+            'calibration_type' => 'required',
+            'range' => 'required',
+            'correction_factor' => 'required',
+            'significance' => 'required|in:ya,tidak',
         ]);
 
         if ($validation->fails()) {
@@ -147,10 +159,27 @@ class AssetController extends Controller
             ]);
         }
 
+        if ($request->calibration_start_date != $asset->calibration_start_date || $request->calibration_interval != $asset->calibration_interval) {
+            $asset->calibration_due_date = Carbon::parse($request->calibration_start_date)->addYears((int) $request->calibration_interval);
+        }
+
         $asset->inventory_number = $request->inventory_number;
+        $asset->tag_number = $request->tag_number;
         $asset->name = $request->name;
-        $asset->serial_number = $request->serial_number;
         $asset->brand_id = $request->brand_id;
+        $asset->serial_number = $request->serial_number;
+        $asset->color = $request->color;
+        $asset->size = $request->size;
+        $asset->condition = $request->condition;
+        $asset->status = $request->status;
+        $asset->calibration_number = $request->calibration_number;
+        $asset->calibration_interval = $request->calibration_interval;
+        $asset->calibration_start_date = $request->calibration_start_date;
+        $asset->calibration_institution = $request->calibration_institution;
+        $asset->calibration_type = $request->calibration_type;
+        $asset->range = $request->range;
+        $asset->correction_factor = $request->correction_factor;
+        $asset->significance = $request->significance;
 
         if ($request->hasFile('photo')) {
             Storage::disk('public')->delete($asset->photo);
@@ -167,13 +196,13 @@ class AssetController extends Controller
 
             $calibrationFiles = [];
             foreach ($request->file('calibration') as $file) {
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('assets/calibrations', $fileName, 'public');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('assets/calibrations', $fileName, 'public');
 
-            $calibrationFiles[] = [
-                'name' => $file->getClientOriginalName(),
-                'path' => $path
-            ];
+                $calibrationFiles[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path
+                ];
             }
             $asset->calibration = json_encode($calibrationFiles);
         }
