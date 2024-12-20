@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Employee;
 use App\Models\Position;
 use Illuminate\Http\Request;
@@ -111,6 +112,10 @@ class EmployeeController extends Controller
                 'name' => $request->name,
                 'npp' => $request->npp,
             ]);
+
+            $headOffice->user->update([
+                'name' => $request->name,
+            ]);
         }
 
         return response()->json([
@@ -134,6 +139,14 @@ class EmployeeController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $validation->errors()->first(),
+            ]);
+        }
+
+        $user = $employee->user;
+
+        if ($user) {
+            $user->update([
+                'name' => $request->name,
             ]);
         }
 
