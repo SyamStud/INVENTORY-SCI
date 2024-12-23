@@ -21,7 +21,7 @@
                         <th>Penganggung Jawab</th>
                         <th>Penerima</th>
                         <th class="w-20">Tanggal</th>
-                        <th class="w-20">Detail Aset</th>
+                        <th class="w-20">Detail Barang</th>
                         <th class="w-20">Status</th>
                         <th class="w-20">Dokumen</th>
                     </tr>

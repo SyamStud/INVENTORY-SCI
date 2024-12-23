@@ -129,7 +129,7 @@
                 </div>
 
                 <div class="mb-4 w-full">
-                    <x-input-label for="name" :value="__('Nama Pegawai')" />
+                    <x-input-label for="name" :value="__('Posisi')" />
                     <select class="w-full select2" name="position_id" x-data x-init="$nextTick(() => {
                         $('.select2').select2(); // Inisialisasi Select2
                         if (employee) {

@@ -335,13 +335,15 @@
                 <div class="mb-4">
                     <x-input-label for="edit_calibration_start_date" :value="__('Tanggal Kalibrasi')" />
                     <x-text-input id="edit_calibration_start_date" class="block mt-1 w-full" type="date"
-                        name="calibration_start_date" required x-bind:value="asset?.calibration_start_date" autofocus />
+                        name="calibration_start_date" required x-bind:value="asset?.calibration_start_date"
+                        autofocus />
                 </div>
 
                 <div class="mb-4">
                     <x-input-label for="edit_calibration_institution" :value="__('Lembaga Kalibrasi')" />
                     <x-text-input id="edit_calibration_institution" class="block mt-1 w-full" type="text"
-                        name="calibration_institution" required x-bind:value="asset?.calibration_institution" autofocus />
+                        name="calibration_institution" required x-bind:value="asset?.calibration_institution"
+                        autofocus />
                 </div>
 
                 <div class="mb-4">
@@ -462,6 +464,15 @@
                     serverSide: true,
                     responsive: true,
                     ajax: "{{ route('assets.data') }}",
+                    dom: '<"top"Blf>rt<"bottom"ip>',
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        text: '<span class="flex gap-2 items-center"><img src="https://img.icons8.com/?size=100&id=11594&format=png&color=FFFFFF" alt="Excel" style="height:20px; margin-right:5px;"> Export ke Excel</span>',
+                        title: 'Data Aset',
+                        exportOptions: {
+                            columns: ':not(:last-child):not(:nth-child(n+20):nth-child(-n+22))'
+                        }
+                    }],
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -570,51 +581,10 @@
                             createdCell: function(td, cellData, rowData, row, col) {
                                 $(td).addClass('text-center');
                             }
-                        },
-                        {
-                            targets: -1,
-                            className: 'dt-body-right'
                         }
                     ]
                 }).columns.adjust()
                 .responsive.recalc();
-
-            dataTable.on('draw', function() {
-                $('#exam thead th').css('border-top-right-radius', '0');
-
-                var visibleColumns = dataTable.columns(':visible').indexes().toArray();
-                var lastVisibleColumnIndex = visibleColumns[visibleColumns.length - 1];
-
-                if (lastVisibleColumnIndex !== undefined) {
-                    $('#exam thead th').eq(lastVisibleColumnIndex).css('border-top-right-radius', '8px');
-                    $('#exam tbody tr td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius',
-                        '8px');
-                }
-            });
-
-            // Mengatur border ketika kolom diperluas atau disembunyikan
-            dataTable.on('responsive-resize responsive-display', function() {
-                updateBorders();
-            });
-
-            // Fungsi untuk memperbarui border
-            function updateBorders() {
-                // Dapatkan indeks kolom terakhir yang terlihat
-                var visibleColumns = dataTable.columns(':visible').indexes().toArray();
-                var lastVisibleColumnIndex = visibleColumns[visibleColumns.length - 1];
-
-                console.log('Last visible column index:', lastVisibleColumnIndex);
-
-                if (lastVisibleColumnIndex != undefined) {
-                    $('#exam tbody tr').each(function() {
-                        $(this).find('td').eq(lastVisibleColumnIndex).css('border-bottom-right-radius',
-                            '0px');
-                    });
-                }
-
-                console.log('Borders updated');
-            }
-
         });
 
         function setLoading(button, isLoading, text, type = 'add') {
@@ -812,5 +782,11 @@
             });
         });
     </script>
+
+    <style>
+        .dt-button.buttons-excel.buttons-html5 {
+            margin-right: 15px;
+        }
+    </style>
 
 </x-app-layout>

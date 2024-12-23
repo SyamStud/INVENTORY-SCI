@@ -61,7 +61,7 @@
                 <thead>
                     <tr class="text-white">
                         <th class="w-10">No</th>
-                        <th>Nama</th>
+                        <th>Nama Pegawai</th>
                         <th>NPP</th>
                         <th>Email</th>
                         <th class="w-40">Aksi</th>
