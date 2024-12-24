@@ -53,9 +53,14 @@
                     @endif
 
                     @if (Auth::user()->hasRole('admin'))
-                        <x-nav-link class="hidden md:flex" :href="route('vehicles.index')" :active="request()->routeIs('vehicles.index')">
-                            {{ __('Kendaraan') }}
-                        </x-nav-link>
+                        <x-dropdown-wrapper name="Kendaraan">
+                            <x-dropdown-link :href="route('vehicles.index')">
+                                Daftar Kendaraan
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('fuels.index')">
+                                Pengisian Bahan Bakar
+                            </x-dropdown-link>
+                        </x-dropdown-wrapper>
                     @endif
 
                     @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage-assets'))

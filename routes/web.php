@@ -23,15 +23,16 @@ use App\Http\Controllers\OutboundController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryInController;
-use App\Http\Controllers\DeliveryOutController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\DeliveryOutController;
 use App\Http\Controllers\InboundTempController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReturnAssetController;
 use App\Http\Controllers\OutboundTempController;
 use App\Http\Controllers\VehicleUsageController;
 use App\Http\Controllers\DocumentSigningController;
+use App\Http\Controllers\FuelFillingController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -93,6 +94,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/vehicles/getVehicles', [VehicleController::class, 'getVehicles'])->name('vehicles.data')->middleware('role_or_permission:admin');
         Route::resource('/vehicles', VehicleController::class)->middleware('role_or_permission:admin');
+
+        Route::get('/fuels/getFuels', [FuelFillingController::class, 'getFuelFillings'])->name('fuels.data')->middleware('role_or_permission:admin');
+        Route::resource('/fuels', FuelFillingController::class)->middleware('role_or_permission:admin');
 
         Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index')->middleware('role_or_permission:admin|manage-users');
         Route::put('/permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('role_or_permission:admin|manage-users');
